@@ -28,6 +28,7 @@ export const createUser = ({
 			},
 		},
 		select: {
+			id: true,
 			email: true,
 			role: true,
 		},

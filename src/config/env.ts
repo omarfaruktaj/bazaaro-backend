@@ -6,4 +6,6 @@ export const envConfig = cleanEnv(process.env, {
 		default: "development",
 	}),
 	PORT: num({ default: 5000 }),
+	ACCESS_TOKEN_SECRET: str(),
+	REFRESH_TOKEN_SECRET: str(),
 });
