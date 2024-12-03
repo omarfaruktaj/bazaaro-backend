@@ -6,7 +6,7 @@ interface Payload {
 	role: UserRoles;
 }
 
-export const generateToken = (
+export const generateJWTToken = (
 	payload: Payload,
 	secret: jwt.Secret,
 	expiresIn: string | number = "1h",
@@ -18,6 +18,6 @@ export const generateToken = (
 	});
 };
 
-export const verifyToken = (token: string, secret: string) => {
+export const verifyJWTToken = (token: string, secret: string) => {
 	return jwt.verify(token, secret);
 };

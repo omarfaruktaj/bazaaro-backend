@@ -29,6 +29,7 @@ model User {
   deletedAt     DateTime?
   createdAt     DateTime     @default(now())
   updatedAt     DateTime     @updatedAt
+  token         Token[]
 }
 
 model Profile {
@@ -213,4 +214,19 @@ model FlashSale {
   startTime DateTime
   endTime   DateTime
   product   Product  @relation(fields: [productId], references: [id])
+}
+
+enum TokenType {
+  PASSWORD_RESET
+  EMAIL_VERIFICATION
+}
+
+model Token {
+  id        String    @id @default(uuid())
+  userId    String
+  type      TokenType
+  token     String    @unique
+  expireAt  DateTime
+  user      User      @relation(fields: [userId], references: [id])
+  createdAt DateTime  @default(now())
 }

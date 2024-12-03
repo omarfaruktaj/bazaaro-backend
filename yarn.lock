@@ -580,6 +580,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@types/nodemailer@npm:^6":
+  version: 6.4.17
+  resolution: "@types/nodemailer@npm:6.4.17"
+  dependencies:
+    "@types/node": "npm:*"
+  checksum: 10c0/689abb3005cf36cf89c2abe56f0aa4469a37e0814633a73fbeb35732e856f4b0d7ab32b6d91585038b6941f5b70db58ec2bd147ebe9f73e528eb6c99604f4e82
+  languageName: node
+  linkType: hard
+
 "@types/qs@npm:*":
   version: 6.9.17
   resolution: "@types/qs@npm:6.9.17"
@@ -786,6 +795,7 @@ __metadata:
     "@types/jsonwebtoken": "npm:^9"
     "@types/morgan": "npm:^1.9.9"
     "@types/node": "npm:^22.10.1"
+    "@types/nodemailer": "npm:^6"
     bcryptjs: "npm:^2.4.3"
     cors: "npm:^2.8.5"
     envalid: "npm:^8.0.0"
@@ -795,6 +805,7 @@ __metadata:
     husky: "npm:^9.1.7"
     jsonwebtoken: "npm:^9.0.2"
     morgan: "npm:^1.10.0"
+    nodemailer: "npm:^6.9.16"
     prisma: "npm:^6.0.1"
     ts-node-dev: "npm:^2.0.0"
     tsc: "npm:^2.0.4"
@@ -2362,6 +2373,13 @@ __metadata:
   bin:
     node-gyp: bin/node-gyp.js
   checksum: 10c0/00630d67dbd09a45aee0a5d55c05e3916ca9e6d427ee4f7bc392d2d3dc5fad7449b21fc098dd38260a53d9dcc9c879b36704a1994235d4707e7271af7e9a835b
+  languageName: node
+  linkType: hard
+
+"nodemailer@npm:^6.9.16":
+  version: 6.9.16
+  resolution: "nodemailer@npm:6.9.16"
+  checksum: 10c0/9fd73ab4ab5b81544c3c9820afbe386369aba442f997b2f58d171222a898a7aed580fc100bfe6eebc194f18ba6e169d67ee40ca64d32d69022d89e575cef97a4
   languageName: node
   linkType: hard
 

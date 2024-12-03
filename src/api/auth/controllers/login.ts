@@ -1,9 +1,12 @@
 import { envConfig } from "@/config";
 import { findUserByEmail } from "@/lib";
-import { APIResponse, AppError } from "@/utils";
-import { compareHash } from "@/utils/hash";
-import { logger } from "@/utils/logger";
-import { generateToken } from "@/utils/token";
+import {
+	APIResponse,
+	AppError,
+	compareHash,
+	generateJWTToken,
+	logger,
+} from "@/utils";
 import type { RequestHandler } from "express";
 import type { loginSchemaType } from "../schemas";
 
@@ -26,12 +29,12 @@ const login: RequestHandler = async (req, res, next) => {
 	}
 
 	logger.info(`User logged in: ${existingUser.email}`);
-	const accessToken = generateToken(
+	const accessToken = generateJWTToken(
 		{ id: existingUser.id, role: existingUser.role },
 		envConfig.ACCESS_TOKEN_SECRET,
 		"15m",
 	);
-	const refreshToken = generateToken(
+	const refreshToken = generateJWTToken(
 		{ id: existingUser.id, role: existingUser.role },
 		envConfig.REFRESH_TOKEN_SECRET,
 		"7d",

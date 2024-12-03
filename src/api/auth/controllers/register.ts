@@ -1,9 +1,12 @@
 import { envConfig } from "@/config";
 import { createUser, findUserByEmail } from "@/lib";
-import { APIResponse, AppError } from "@/utils";
-import { createHash } from "@/utils/hash";
-import { logger } from "@/utils/logger";
-import { generateToken } from "@/utils/token";
+import {
+	APIResponse,
+	AppError,
+	createHash,
+	generateJWTToken,
+	logger,
+} from "@/utils";
 import type { RequestHandler } from "express";
 import type { RegisterSchemaType } from "../schemas";
 
@@ -25,12 +28,12 @@ const register: RequestHandler = async (req, res, next) => {
 
 	logger.info(`User login in: ${newUser.email}`);
 
-	const accessToken = generateToken(
+	const accessToken = generateJWTToken(
 		{ id: newUser.id, role: newUser.role },
 		envConfig.ACCESS_TOKEN_SECRET,
 		"15m",
 	);
-	const refreshToken = generateToken(
+	const refreshToken = generateJWTToken(
 		{ id: newUser.id, role: newUser.role },
 		envConfig.REFRESH_TOKEN_SECRET,
 		"7d",
