@@ -1,0 +1,35 @@
+{
+  "compilerOptions": {
+    "target": "ESNext",                         // Stay up to date with the latest ECMAScript features
+    "module": "commonjs",                       // Use CommonJS for Node.js compatibility
+    "moduleResolution": "node",                 // Resolve modules using Node.js resolution logic
+    "esModuleInterop": true,                    // Allow default imports from modules with no default export
+    "strict": true,                             // Enable strict type checking
+    "baseUrl": ".",                             // Set base directory for module resolution
+    "paths": {
+      "@/*": ["src/*"]                       // Custom path aliases
+    },
+    "outDir": "./dist",                         // Output compiled files to the dist directory
+    "sourceMap": true,                          // Generate source maps for easier debugging
+    "declaration": true,                        // Generate declaration files for type support
+    "declarationMap": true,                     // Generate maps for the declaration files
+    "removeComments": true,                     // Remove comments in the compiled output
+    "lib": ["ES2021"],                          // Use the ES2021 library for Node.js (remove DOM)
+    "resolveJsonModule": true,                  // Allow importing JSON modules
+    "noEmitOnError": true,                      // Don't emit output if there are type errors
+    "downlevelIteration": true,                 // Enable downlevel iteration for better compatibility with older engines
+    "skipLibCheck": true,                       // Skip checking third-party libraries for speed
+    "forceConsistentCasingInFileNames": true,   // Ensure file name casing consistency
+    "allowSyntheticDefaultImports": true,       // Allow synthetic default imports
+    "typeRoots": ["./src/types", "./node_modules/@types"],  // Custom types location
+    "types": ["node", "express"],               // Include Node.js and Express types
+    "noImplicitAny": true,                      // Avoid implicit `any` type
+  },
+  "include": [
+    "src/**/*.ts"                               // Include all TypeScript files in the `src` directory
+  ],
+  "exclude": [
+    "node_modules",                             // Exclude `node_modules` from compilation
+    "dist"                                      // Exclude compiled output
+  ]
+}

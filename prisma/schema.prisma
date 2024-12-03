@@ -1,0 +1,216 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum UserRoles {
+  ADMIN
+  VENDOR
+  CUSTOMER
+}
+
+model User {
+  id            String       @id @default(uuid())
+  email         String       @unique
+  password      String
+  role          UserRoles    @default(CUSTOMER)
+  suspended     DateTime?
+  profile       Profile?
+  shop          Shop?
+  payment       Payment[]
+  cart          Cart[]
+  review        Review[]
+  followedShops ShopFollow[]
+  order         Order[]
+  deletedAt     DateTime?
+  createdAt     DateTime     @default(now())
+  updatedAt     DateTime     @updatedAt
+}
+
+model Profile {
+  id        String   @id @default(uuid())
+  name      String
+  address   String?
+  phone     String?
+  bio       String?
+  avatar    String?
+  userId    String   @unique
+  user      User     @relation(fields: [userId], references: [id])
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Shop {
+  id            String       @id @default(uuid())
+  name          String
+  description   String?
+  logo          String?
+  userId        String       @unique
+  user          User         @relation(fields: [userId], references: [id])
+  product       Product[]
+  review        Review[]
+  shopFollow    ShopFollow[]
+  order         Order[]
+  isBlacklisted Boolean      @default(false)
+  deletedAt     DateTime?
+  createdAt     DateTime     @default(now())
+  updatedAt     DateTime     @updatedAt
+}
+
+model Product {
+  id          String      @id @default(uuid())
+  name        String
+  description String
+  price       Float
+  quantity    Int
+  image       String
+  discount    Float?
+  categoryId  String
+  category    Category    @relation(fields: [categoryId], references: [id])
+  shopId      String
+  shop        Shop        @relation(fields: [shopId], references: [id])
+  orderItem   OrderItem[]
+  cartItem    CartItem[]
+  review      Review[]
+  flashSale   FlashSale[]
+  deletedAt   DateTime?
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+}
+
+model Category {
+  id          String    @id @default(uuid())
+  name        String
+  description String?
+  product     Product[]
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+}
+
+enum OrderStatus {
+  PENDING
+  PAID
+  SHIPPED
+  DELIVERED
+  CANCELLED
+}
+
+enum PaymentStatus {
+  PENDING
+  PAID
+  FAILED
+}
+
+enum PaymentMethod {
+  STRIPE
+}
+
+model Order {
+  id            String         @id @default(uuid())
+  totalAmount   Float
+  status        OrderStatus
+  userId        String
+  shopId        String
+  orderItem     OrderItem[]
+  paymentStatus PaymentStatus?
+  paymentMethod PaymentMethod?
+  user          User           @relation(fields: [userId], references: [id])
+  shop          Shop           @relation(fields: [shopId], references: [id])
+  payment       Payment?
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+}
+
+model OrderItem {
+  id        String  @id @default(uuid())
+  quantity  Int
+  price     Float
+  orderId   String
+  productId String
+  order     Order   @relation(fields: [orderId], references: [id])
+  product   Product @relation(fields: [productId], references: [id])
+}
+
+model Payment {
+  id             String        @id @default(uuid())
+  userId         String
+  orderId        String        @unique
+  amount         Float
+  transactionId  String
+  paymentMethod  PaymentMethod
+  paymentStatus  PaymentStatus
+  paymentDetails Json?
+  order          Order         @relation(fields: [orderId], references: [id])
+  user           User          @relation(fields: [userId], references: [id])
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime      @updatedAt
+}
+
+model Cart {
+  id        String     @id @default(uuid())
+  userId    String
+  shopId    String
+  user      User       @relation(fields: [userId], references: [id])
+  cartItems CartItem[]
+}
+
+model CartItem {
+  id        String  @id @default(uuid())
+  cartId    String
+  productId String
+  quantity  Int
+  cart      Cart    @relation(fields: [cartId], references: [id])
+  product   Product @relation(fields: [productId], references: [id])
+}
+
+model Review {
+  id        String    @id @default(uuid())
+  userId    String
+  shopId    String
+  productId String
+  rating    Int
+  review    String?
+  user      User      @relation(fields: [userId], references: [id])
+  shop      Shop      @relation(fields: [shopId], references: [id])
+  product   Product   @relation(fields: [productId], references: [id])
+  deletedAt DateTime?
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+}
+
+enum DiscountType {
+  PERCENTAGE
+  FIXED
+}
+
+model Coupon {
+  id            String       @id @default(uuid())
+  code          String       @unique
+  discountType  DiscountType
+  discountValue Float
+  startDate     DateTime
+  endDate       DateTime
+}
+
+model ShopFollow {
+  id        String   @id @default(uuid())
+  shopId    String
+  userId    String
+  user      User     @relation(fields: [userId], references: [id])
+  shop      Shop     @relation(fields: [shopId], references: [id])
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model FlashSale {
+  id        String   @id @default(uuid())
+  productId String
+  discount  Float
+  startTime DateTime
+  endTime   DateTime
+  product   Product  @relation(fields: [productId], references: [id])
+}

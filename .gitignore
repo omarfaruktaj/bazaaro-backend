@@ -1,0 +1,57 @@
+# Ignore Yarn specific folders
+.yarn/*
+!.yarn/patches
+!.yarn/plugins
+!.yarn/releases
+!.yarn/sdks
+!.yarn/versions
+
+# If you're using zero-installs, uncomment the following line and run
+# `yarn config set enableGlobalCache false`
+# to enable caching via Yarn's global cache.
+# .yarn/cache
+
+# Ignore node_modules and other dependencies
+node_modules
+
+# Ignore environment variable files
+.env
+
+# TypeScript build output (you can adjust based on your tsconfig.json settings)
+dist/
+build/
+
+# Ignore npm debug logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Ignore IDE/editor settings
+.vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace
+
+# Ignore system files
+.DS_Store
+Thumbs.db
+
+# Ignore Prisma files (this might vary based on your project configuration)
+prisma/migrations/
+
+# Ignore log files
+*.log
+
+# Ignore coverage reports
+coverage/
+
+# Ignore temporary files
+tmp/
+temp/
+
+# Ignore any build or deployment directories
+deploy/
+build/
+
+
+dev.http
