@@ -1,7 +1,7 @@
-import { resourceRoutes } from "@/api/resource";
+import { authRoutes } from "@/api/auth";
 import { Router } from "express";
 
 const router = Router();
-router.use("/", resourceRoutes);
+router.use("/auth", authRoutes);
 
 export default router;

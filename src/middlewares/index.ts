@@ -1,9 +1,11 @@
 import express, { type Express } from "express";
 import rateLimit from "express-rate-limit";
 import helmet from "helmet";
+import morgan from "morgan";
 
 const applyMiddleware = (app: Express) => {
 	app.use(helmet());
+	app.use(morgan("dev"));
 	app.use(express.json());
 	app.use(
 		rateLimit({
