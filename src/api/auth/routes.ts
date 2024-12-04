@@ -2,6 +2,7 @@ import validateRequest from "@/middlewares/validate-request";
 import { Router } from "express";
 import {
 	loginController,
+	refreshTokenController,
 	registerController,
 	requestRestPasswordController,
 	resetPasswordController,
@@ -27,5 +28,7 @@ router.post(
 	validateRequest(ResetPasswordSchema),
 	resetPasswordController,
 );
+
+router.post("/refreshToken", refreshTokenController);
 
 export default router;

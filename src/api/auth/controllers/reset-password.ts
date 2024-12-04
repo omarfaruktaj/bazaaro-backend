@@ -1,8 +1,8 @@
+import crypto from "node:crypto";
 import { deleteToken, findTokenWithUser, updateUser } from "@/lib";
 import { APIResponse, AppError, createHash } from "@/utils";
 import { TokenType } from "@prisma/client";
 import type { RequestHandler } from "express";
-import crypto from "node:crypto";
 import type { ResetPasswordSchemaType } from "../schemas";
 
 const resetPassword: RequestHandler = async (req, res, next) => {
