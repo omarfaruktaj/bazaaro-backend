@@ -20,4 +20,7 @@ export const ProductSchema = z.object({
 	shopId: z.string().uuid(),
 });
 
+export const UpdateProductSchema = ProductSchema.partial();
+
 export type ProductSchemaType = z.infer<typeof ProductSchema>;
+export type UpdateProductSchemaType = z.infer<typeof UpdateProductSchema>;

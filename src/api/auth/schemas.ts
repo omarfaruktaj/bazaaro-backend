@@ -1,6 +1,6 @@
 import { z } from "zod";
 
-const UserRolesEnum = z.enum(["VENDOR", "CUSTOMER"]);
+const UserRolesEnum = z.enum(["VENDOR", "CUSTOMER", "ADMIN"]);
 
 export const RegisterSchema = z.object({
 	name: z.string().min(1, { message: "Name is required" }),
