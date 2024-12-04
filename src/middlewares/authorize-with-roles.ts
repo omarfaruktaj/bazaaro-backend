@@ -10,7 +10,6 @@ declare module "express" {
 		user?: User;
 	}
 }
-
 const authorizeWithRoles =
 	(...roles: UserRoles[]) =>
 	async (req: Request, _res: Response, next: NextFunction) => {
@@ -25,14 +24,7 @@ const authorizeWithRoles =
 		const user = await findUserById(decoded.id);
 
 		if (!user) return next(new AppError("No user found", 404));
-		// if (user.changedPasswordAfter(decoded.iat as number)) {
-		// 	return next(
-		// 		new AppError(
-		// 			"User recently changed password! Please log in again.",
-		// 			401,
-		// 		),
-		// 	);
-		// }
+
 		if (roles && !roles.includes(user.role))
 			return next(
 				new AppError("You do not have permission for this route", 401),

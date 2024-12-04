@@ -1,3 +1,4 @@
+export { default as changePassword } from "./change-password";
 export { default as loginController } from "./login";
 export { default as refreshTokenController } from "./refresh-access-token";
 export { default as registerController } from "./register";

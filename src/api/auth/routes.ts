@@ -1,6 +1,8 @@
+import authorizeWithRoles from "@/middlewares/authorize-with-roles";
 import validateRequest from "@/middlewares/validate-request";
 import { Router } from "express";
 import {
+	changePassword,
 	loginController,
 	refreshTokenController,
 	registerController,
@@ -8,6 +10,7 @@ import {
 	resetPasswordController,
 } from "./controllers";
 import {
+	ChangePasswordSchema,
 	LoginSchema,
 	RegisterSchema,
 	RequestResetPasswordSchema,
@@ -27,6 +30,13 @@ router.post(
 	"/reset-password/:resetToken",
 	validateRequest(ResetPasswordSchema),
 	resetPasswordController,
+);
+
+router.patch(
+	"/changePassword",
+	authorizeWithRoles("ADMIN", "CUSTOMER", "VENDOR"),
+	validateRequest(ChangePasswordSchema),
+	changePassword,
 );
 
 router.post("/refreshToken", refreshTokenController);
