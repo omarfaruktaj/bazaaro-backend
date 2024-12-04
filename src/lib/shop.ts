@@ -19,12 +19,7 @@ export const createShop = ({
 
 export const updateShop = (
 	id: string,
-	{
-		name,
-		userId,
-		description,
-		logo,
-	}: UpdateShopSchemaType & { userId: string },
+	{ name, description, logo }: UpdateShopSchemaType,
 ) => {
 	return db.shop.update({
 		where: {
@@ -34,7 +29,6 @@ export const updateShop = (
 			name,
 			description,
 			logo,
-			userId,
 		},
 	});
 };
