@@ -3,6 +3,8 @@ import type { AnyZodObject } from "zod";
 
 const validateRequest = (schema: AnyZodObject) => {
 	return (req: Request, _res: Response, next: NextFunction) => {
+		console.log(req.body);
+
 		const result = schema.safeParse(req.body);
 
 		if (!result.success) {

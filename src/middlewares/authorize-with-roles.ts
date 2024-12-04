@@ -14,6 +14,7 @@ const authorizeWithRoles =
 	(...roles: UserRoles[]) =>
 	async (req: Request, _res: Response, next: NextFunction) => {
 		const token = req.headers?.authorization?.split(" ")[1];
+		console.log(req.body);
 		if (!token)
 			return next(new AppError("Your are not logged in! Please login.", 401));
 
