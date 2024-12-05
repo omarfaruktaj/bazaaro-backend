@@ -14,7 +14,7 @@ const router = Router();
 router
 	.route("/")
 	.post(
-		authorizeWithRoles("ADMIN", "VENDOR"),
+		authorizeWithRoles("VENDOR"),
 		validateRequest(ProductSchema),
 		createController,
 	)
@@ -23,7 +23,7 @@ router
 router
 	.route("/:productId")
 	.put(
-		authorizeWithRoles("ADMIN", "VENDOR"),
+		authorizeWithRoles("VENDOR"),
 		validateRequest(UpdateProductSchema),
 		updateController,
 	)

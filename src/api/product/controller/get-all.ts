@@ -7,7 +7,7 @@ const getAll = async (req: Request, res: Response, next: NextFunction) => {
 
 	res
 		.status(200)
-		.json(new APIResponse(200, "Products retrieve successfully", products));
+		.json(new APIResponse(200, "Products retrieved successfully", products));
 };
 
 export default getAll;
