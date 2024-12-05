@@ -13,8 +13,14 @@ declare module "express" {
 const authorizeWithRoles =
 	(...roles: UserRoles[]) =>
 	async (req: Request, _res: Response, next: NextFunction) => {
-		const token = req.headers?.authorization?.split(" ")[1];
-		console.log(req.body);
+		let token: string | undefined;
+
+		if (req.headers?.authorization?.startsWith("Bearer")) {
+			token = req.headers.authorization.split(" ")[1];
+		} else if (req.cookies["access-token"]) {
+			token = req.cookies["access-token"];
+		}
+
 		if (!token)
 			return next(new AppError("Your are not logged in! Please login.", 401));
 
@@ -22,6 +28,7 @@ const authorizeWithRoles =
 			token,
 			envConfig.ACCESS_TOKEN_SECRET,
 		)) as JwtPayload;
+
 		const user = await findUserById(decoded.id);
 
 		if (!user) return next(new AppError("No user found", 404));

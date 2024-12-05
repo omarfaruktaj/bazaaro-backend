@@ -32,13 +32,21 @@ const login: RequestHandler = async (req, res, next) => {
 	const accessToken = generateJWTToken(
 		{ id: existingUser.id, role: existingUser.role },
 		envConfig.ACCESS_TOKEN_SECRET,
-		"15m",
+		envConfig.ACCESS_TOKEN_EXPIRE,
 	);
 	const refreshToken = generateJWTToken(
 		{ id: existingUser.id, role: existingUser.role },
 		envConfig.REFRESH_TOKEN_SECRET,
-		"7d",
+		envConfig.REFRESH_TOKEN_EXPIRE,
 	);
+
+	res.cookie("access-token", accessToken, {
+		expires: new Date(
+			Date.now() + envConfig.JWT_COOKIE_EXPIRES_IN * 24 * 60 * 60 * 1000,
+		),
+		httpOnly: true,
+		secure: req.secure,
+	});
 
 	res.status(200).json(
 		new APIResponse(201, "User login successfully", {

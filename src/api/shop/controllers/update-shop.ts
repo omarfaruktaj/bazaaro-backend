@@ -1,5 +1,5 @@
 import { updateShop } from "@/lib";
-import { APIResponse, AppError } from "@/utils";
+import { APIResponse } from "@/utils";
 import type { NextFunction, Request, Response } from "express";
 
 const updateShopController = async (
@@ -8,11 +8,10 @@ const updateShopController = async (
 	next: NextFunction,
 ) => {
 	const { name, description, logo } = req.body;
-	const userId = req.user?.id;
 
-	if (!userId) return next(new AppError("No user found.", 404));
+	const shopId = req.params.shopId;
 
-	const shop = await updateShop(userId, { name, description, logo });
+	const shop = await updateShop(shopId, { name, description, logo });
 
 	res.status(200).json(new APIResponse(200, "Shop updated successfully", shop));
 };

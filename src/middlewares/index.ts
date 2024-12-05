@@ -1,3 +1,4 @@
+import cookieParser from "cookie-parser";
 import express, { type Express } from "express";
 import rateLimit from "express-rate-limit";
 import helmet from "helmet";
@@ -7,6 +8,7 @@ const applyMiddleware = (app: Express) => {
 	app.use(helmet());
 	app.use(morgan("dev"));
 	app.use(express.json());
+	app.use(cookieParser());
 	app.use(
 		rateLimit({
 			windowMs: 15 * 60 * 1000,

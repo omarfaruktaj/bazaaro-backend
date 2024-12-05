@@ -8,11 +8,11 @@ const createShopController = async (
 	next: NextFunction,
 ) => {
 	const { name, description, logo } = req.body;
-	const userId = req.user?.id;
+	const user = req.user;
 
-	if (!userId) return next(new AppError("No user found.", 404));
+	if (!user) return next(new AppError("User is not authenticated", 401));
 
-	const shop = await createShop({ name, description, logo, userId });
+	const shop = await createShop(user, { name, description, logo });
 
 	res.status(201).json(new APIResponse(201, "Shop created successfully", shop));
 };

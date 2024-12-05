@@ -3,42 +3,42 @@ import validateRequest from "@/middlewares/validate-request";
 import { Router } from "express";
 import {
 	changePassword,
+	forgotPasswordController,
 	loginController,
 	refreshTokenController,
 	registerController,
-	requestRestPasswordController,
 	resetPasswordController,
 } from "./controllers";
 import {
 	ChangePasswordSchema,
+	ForgotPasswordSchema,
 	LoginSchema,
 	RegisterSchema,
-	RequestResetPasswordSchema,
 	ResetPasswordSchema,
 } from "./schemas";
 
 const router = Router();
 
-router.post("/register", validateRequest(RegisterSchema), registerController);
+router.post("/signup", validateRequest(RegisterSchema), registerController);
 router.post("/login", validateRequest(LoginSchema), loginController);
 router.post(
-	"/request-password-reset",
-	validateRequest(RequestResetPasswordSchema),
-	requestRestPasswordController,
+	"/forgot-password",
+	validateRequest(ForgotPasswordSchema),
+	forgotPasswordController,
 );
 router.post(
-	"/reset-password/:resetToken",
+	"/reset-password/:token",
 	validateRequest(ResetPasswordSchema),
 	resetPasswordController,
 );
 
 router.patch(
-	"/changePassword",
+	"/change-password",
 	authorizeWithRoles("ADMIN", "CUSTOMER", "VENDOR"),
 	validateRequest(ChangePasswordSchema),
 	changePassword,
 );
 
-router.post("/refreshToken", refreshTokenController);
+router.post("/refresh-token", refreshTokenController);
 
 export default router;

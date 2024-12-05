@@ -2,6 +2,7 @@ import authorizeWithRoles from "@/middlewares/authorize-with-roles";
 import validateRequest from "@/middlewares/validate-request";
 import { Router } from "express";
 import {
+	blacklistShopController,
 	createShopController,
 	deleteShopController,
 	updateShopController,
@@ -13,18 +14,19 @@ const router = Router();
 router
 	.route("/")
 	.post(
-		authorizeWithRoles("ADMIN", "CUSTOMER"),
+		authorizeWithRoles("VENDOR"),
 		validateRequest(ShopSchema),
 		createShopController,
 	)
 	.put(
-		authorizeWithRoles("ADMIN", "CUSTOMER"),
+		authorizeWithRoles("VENDOR"),
 		validateRequest(UpdateShopSchema),
 		updateShopController,
 	);
 
 router
 	.route("/:shopId")
-	.delete(authorizeWithRoles("ADMIN", "CUSTOMER"), deleteShopController);
+	.put(authorizeWithRoles("ADMIN"), blacklistShopController)
+	.delete(authorizeWithRoles("VENDOR", "ADMIN"), deleteShopController);
 
 export default router;

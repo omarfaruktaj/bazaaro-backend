@@ -5,6 +5,7 @@ import {
 	createController,
 	deleteController,
 	getAllController,
+	getSingleController,
 	updateController,
 } from "./controller";
 import { ProductSchema, UpdateProductSchema } from "./schemas";
@@ -22,6 +23,7 @@ router
 
 router
 	.route("/:productId")
+	.get(getSingleController)
 	.put(
 		authorizeWithRoles("VENDOR"),
 		validateRequest(UpdateProductSchema),

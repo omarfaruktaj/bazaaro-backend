@@ -1,11 +1,13 @@
 import type { RegisterSchemaType } from "@/api/auth/schemas";
 import db from "@/config/db";
+import { AppError } from "@/utils";
 import { UserRoles } from "@prisma/client";
 
 export const findUserByEmail = (email: string) => {
 	return db.user.findUnique({
 		where: {
 			email,
+			deletedAt: null,
 		},
 	});
 };
@@ -14,17 +16,26 @@ export const findUserById = async (id: string) => {
 	return await db.user.findUnique({
 		where: {
 			id,
+			deletedAt: null,
 		},
 	});
 };
 
-export const createUser = ({
+export const createUser = async ({
 	name,
 	email,
 	password,
 	role = UserRoles.CUSTOMER,
 }: RegisterSchemaType) => {
-	return db.user.create({
+	const isExistedUser = await db.user.findUnique({
+		where: {
+			email,
+		},
+	});
+
+	if (isExistedUser) throw new AppError("Email already registered.", 400);
+
+	const user = await db.user.create({
 		data: {
 			email,
 			password,
@@ -41,6 +52,8 @@ export const createUser = ({
 			role: true,
 		},
 	});
+
+	return user;
 };
 
 interface UserUpdate {

@@ -18,7 +18,7 @@ export const LoginSchema = z.object({
 		.min(6, { message: "Password must be at least 6 characters long" })
 		.max(100, { message: "Password must be less than 100 characters." }),
 });
-export const RequestResetPasswordSchema = z.object({
+export const ForgotPasswordSchema = z.object({
 	email: z.string().email({ message: "Invalid email format" }),
 });
 
@@ -43,8 +43,6 @@ export const ChangePasswordSchema = z.object({
 });
 export type RegisterSchemaType = z.infer<typeof RegisterSchema>;
 export type loginSchemaType = z.infer<typeof LoginSchema>;
-export type RequestResetPasswordSchemaType = z.infer<
-	typeof RequestResetPasswordSchema
->;
+export type ForgotPasswordSchemaType = z.infer<typeof ForgotPasswordSchema>;
 export type ResetPasswordSchemaType = z.infer<typeof ResetPasswordSchema>;
 export type ChangePasswordSchemaType = z.infer<typeof ChangePasswordSchema>;
