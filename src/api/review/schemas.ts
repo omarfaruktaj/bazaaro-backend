@@ -1,7 +1,6 @@
 import { z } from "zod";
 
 export const ReviewSchema = z.object({
-	userId: z.string().uuid(),
 	shopId: z.string().uuid(),
 	productId: z.string().uuid(),
 	rating: z

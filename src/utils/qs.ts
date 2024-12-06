@@ -60,7 +60,18 @@ export function filterQueryParams(
 function filterNestedQueryParams(value: ParsedQs): Record<string, string> {
 	// Define the allowed keys in a nested query (gte, gt, lte, lt)
 	const allowedKeys = ["gte", "gt", "lte", "lt"];
-
+	// const allowedKeys = [
+	// 	"gte",
+	// 	"gt",
+	// 	"lte",
+	// 	"lt",
+	// 	"in",
+	// 	"notIn",
+	// 	"contains",
+	// 	"startsWith",
+	// 	"endsWith",
+	// 	// Add more operators as necessary
+	// ];
 	if (isObject(value)) {
 		return Object.keys(value).reduce(
 			(filtered, key) => {

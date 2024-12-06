@@ -70,7 +70,6 @@ export const updateProduct = async (
 		image,
 		price,
 		quantity,
-		shopId,
 		discount,
 	}: UpdateProductSchemaType,
 ) => {
@@ -103,7 +102,6 @@ export const updateProduct = async (
 			image,
 			price,
 			quantity,
-			shopId,
 			discount,
 		},
 	});

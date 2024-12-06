@@ -98,6 +98,6 @@ export const blackListShop = async (shopId: string) => {
 	});
 };
 
-export const findAllShop = (id: string) => {
+export const findAllShop = () => {
 	return db.shop.findMany();
 };

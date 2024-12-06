@@ -5,6 +5,7 @@ import {
 	blacklistShopController,
 	createShopController,
 	deleteShopController,
+	findAll,
 	updateShopController,
 } from "./controllers";
 import { ShopSchema, UpdateShopSchema } from "./schemas";
@@ -13,6 +14,7 @@ const router = Router();
 
 router
 	.route("/")
+	.get(authorizeWithRoles("ADMIN"), findAll)
 	.post(
 		authorizeWithRoles("VENDOR"),
 		validateRequest(ShopSchema),

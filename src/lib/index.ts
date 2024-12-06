@@ -1,3 +1,4 @@
+export * as cartService from "./cart";
 export * from "./category";
 export * from "./product";
 export * from "./shop";

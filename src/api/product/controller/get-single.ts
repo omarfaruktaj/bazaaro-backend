@@ -1,5 +1,5 @@
 import { findSingleProduct } from "@/lib";
-import { APIResponse, AppError } from "@/utils";
+import { APIResponse } from "@/utils";
 import type { NextFunction, Request, Response } from "express";
 
 const getSingleController = async (
@@ -8,10 +8,6 @@ const getSingleController = async (
 	next: NextFunction,
 ) => {
 	const productId = req.params.productId;
-
-	const user = req.user;
-
-	if (!user) return next(new AppError("You don't have permission", 401));
 
 	const product = await findSingleProduct(productId);
 

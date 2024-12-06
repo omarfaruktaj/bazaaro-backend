@@ -1,6 +1,6 @@
 import type { RegisterSchemaType } from "@/api/auth/schemas";
 import db from "@/config/db";
-import { AppError } from "@/utils";
+import { AppError, createHash } from "@/utils";
 import { UserRoles } from "@prisma/client";
 
 export const findUserByEmail = (email: string) => {
@@ -34,22 +34,33 @@ export const createUser = async ({
 	});
 
 	if (isExistedUser) throw new AppError("Email already registered.", 400);
+	const hashedPassword = await createHash(password);
+
+	if (role === UserRoles.VENDOR) {
+		const user = await db.user.create({
+			data: {
+				email,
+				role,
+				password: hashedPassword,
+			},
+		});
+
+		return user;
+	}
+
+	if (!name) throw new AppError("Name is required.", 400);
 
 	const user = await db.user.create({
 		data: {
 			email,
-			password,
 			role,
+			password: hashedPassword,
+
 			profile: {
 				create: {
 					name,
 				},
 			},
-		},
-		select: {
-			id: true,
-			email: true,
-			role: true,
 		},
 	});
 
@@ -63,33 +74,30 @@ interface UserUpdate {
 	role?: UserRoles;
 }
 
-export const updateUser = async ({
-	userId,
-	email,
-	password,
-	role,
-}: UserUpdate) => {
-	const user = await db.user.findUnique({
+export const changeUserPassword = async (
+	userId: string,
+	currentPassword: string,
+	newPassword: string,
+) => {
+	const user = await findUserById(userId);
+
+	if (!user) throw new AppError("No user found.", 404);
+
+	if (user.password !== currentPassword)
+		throw new AppError("Your current password is wrong.", 400);
+
+	const hashedPassword = await createHash(newPassword);
+
+	const updatedUser = db.user.update({
 		where: {
-			id: userId,
-			deletedAt: null,
-		},
-	});
-
-	if (!user) throw new AppError("No user found", 404);
-
-	if (user.suspended) throw new AppError("User is suspended", 400);
-
-	return db.user.update({
-		where: {
-			id: userId,
+			id: user.id,
 		},
 		data: {
-			email,
-			password,
-			role,
+			password: hashedPassword,
 		},
 	});
+
+	return updatedUser;
 };
 
 export const findAllUsers = () => {
