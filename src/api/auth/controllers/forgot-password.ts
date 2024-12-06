@@ -1,10 +1,10 @@
+import crypto from "node:crypto";
+import { env } from "node:process";
 import { createToken, deleteToken, findUserByEmail } from "@/lib";
 import { APIResponse, AppError } from "@/utils";
 import { Email } from "@/utils/email";
 import { TokenType } from "@prisma/client";
 import type { RequestHandler } from "express";
-import crypto from "node:crypto";
-import { env } from "node:process";
 import type { ForgotPasswordSchemaType } from "../schemas";
 
 const forgotPassword: RequestHandler = async (req, res, next) => {

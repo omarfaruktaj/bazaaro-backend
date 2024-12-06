@@ -63,7 +63,23 @@ interface UserUpdate {
 	role?: UserRoles;
 }
 
-export const updateUser = ({ userId, email, password, role }: UserUpdate) => {
+export const updateUser = async ({
+	userId,
+	email,
+	password,
+	role,
+}: UserUpdate) => {
+	const user = await db.user.findUnique({
+		where: {
+			id: userId,
+			deletedAt: null,
+		},
+	});
+
+	if (!user) throw new AppError("No user found", 404);
+
+	if (user.suspended) throw new AppError("User is suspended", 400);
+
 	return db.user.update({
 		where: {
 			id: userId,
@@ -72,6 +88,50 @@ export const updateUser = ({ userId, email, password, role }: UserUpdate) => {
 			email,
 			password,
 			role,
+		},
+	});
+};
+
+export const findAllUsers = () => {
+	return db.user.findMany();
+};
+
+export const suspendUser = async (userId: string) => {
+	const user = await db.user.findUnique({
+		where: {
+			id: userId,
+			deletedAt: null,
+		},
+	});
+
+	if (!user) throw new AppError("No user found", 404);
+
+	return db.user.update({
+		where: {
+			id: userId,
+		},
+		data: {
+			suspended: new Date(),
+		},
+	});
+};
+
+export const deleteUser = async (userId: string) => {
+	const user = await db.user.findUnique({
+		where: {
+			id: userId,
+			deletedAt: null,
+		},
+	});
+
+	if (!user) throw new AppError("No user found", 404);
+
+	return db.user.update({
+		where: {
+			id: userId,
+		},
+		data: {
+			suspended: new Date(),
 		},
 	});
 };

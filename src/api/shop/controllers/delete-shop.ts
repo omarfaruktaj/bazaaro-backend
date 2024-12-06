@@ -1,5 +1,5 @@
-import { deleteShopById } from "@/lib";
-import { APIResponse } from "@/utils";
+import { deleteShop } from "@/lib";
+import { APIResponse, AppError } from "@/utils";
 import type { NextFunction, Request, Response } from "express";
 
 const deleteShopController = async (
@@ -8,8 +8,11 @@ const deleteShopController = async (
 	next: NextFunction,
 ) => {
 	const shopId = req.params.shopId;
+	const user = req.user;
 
-	const shop = deleteShopById(shopId);
+	if (!user) return next(new AppError("User is not authenticated", 401));
+
+	const shop = deleteShop(user, shopId);
 
 	res.status(200).json(new APIResponse(200, "Shop deleted successfully", shop));
 };
