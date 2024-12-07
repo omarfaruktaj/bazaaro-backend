@@ -46,20 +46,22 @@ model Profile {
 }
 
 model Shop {
-  id            String       @id @default(uuid())
-  name          String
-  description   String?
-  logo          String?
-  userId        String       @unique
-  user          User         @relation(fields: [userId], references: [id])
-  product       Product[]
-  review        Review[]
-  shopFollow    ShopFollow[]
-  order         Order[]
-  isBlacklisted Boolean      @default(false)
-  deletedAt     DateTime?
-  createdAt     DateTime     @default(now())
-  updatedAt     DateTime     @updatedAt
+  id             String               @id @default(uuid())
+  name           String
+  description    String?
+  logo           String?
+  userId         String               @unique
+  user           User                 @relation(fields: [userId], references: [id])
+  product        Product[]
+  review         Review[]
+  shopFollow     ShopFollow[]
+  order          Order[]
+  isBlacklisted  Boolean              @default(false)
+  deletedAt      DateTime?
+  createdAt      DateTime             @default(now())
+  updatedAt      DateTime             @updatedAt
+  reviewResponse ShopReviewResponse[]
+  coupon         Coupon[]
 }
 
 model Product {
@@ -170,18 +172,32 @@ model CartItem {
 }
 
 model Review {
+  id             String               @id @default(uuid())
+  userId         String
+  shopId         String
+  productId      String
+  rating         Int
+  review         String?
+  user           User                 @relation(fields: [userId], references: [id])
+  shop           Shop                 @relation(fields: [shopId], references: [id])
+  product        Product              @relation(fields: [productId], references: [id])
+  deletedAt      DateTime?
+  createdAt      DateTime             @default(now())
+  updatedAt      DateTime             @updatedAt
+  reviewResponse ShopReviewResponse[]
+}
+
+model ShopReviewResponse {
   id        String    @id @default(uuid())
-  userId    String
+  reviewId  String
   shopId    String
-  productId String
-  rating    Int
-  review    String?
-  user      User      @relation(fields: [userId], references: [id])
+  response  String
+  review    Review    @relation(fields: [reviewId], references: [id])
   shop      Shop      @relation(fields: [shopId], references: [id])
-  product   Product   @relation(fields: [productId], references: [id])
   deletedAt DateTime?
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @updatedAt
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 enum DiscountType {
@@ -191,11 +207,15 @@ enum DiscountType {
 
 model Coupon {
   id            String       @id @default(uuid())
-  code          String       @unique
+  code          String
+  shopId        String
   discountType  DiscountType
   discountValue Float
   startDate     DateTime
   endDate       DateTime
+  shop          Shop         @relation(fields: [shopId], references: [id])
+
+  @@unique([code, shopId])
 }
 
 model ShopFollow {
