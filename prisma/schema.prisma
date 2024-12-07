@@ -116,6 +116,8 @@ enum PaymentMethod {
 model Order {
   id            String         @id @default(uuid())
   totalAmount   Float
+  discount      Float          @default(0)
+  finalTotal    Float
   status        OrderStatus
   userId        String
   shopId        String
