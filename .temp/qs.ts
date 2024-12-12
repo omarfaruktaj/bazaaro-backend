@@ -11,15 +11,12 @@ import type { ParsedQs } from "qs";
 export function filterQueryParams(
 	query: ParsedQs,
 	fields: string[],
-): Record<string, string | number | Record<string, string | number>> {
+): Record<string, string | Record<string, string>> {
 	if (!Array.isArray(fields)) {
 		throw new Error('The "fields" argument must be an array of strings.');
 	}
 
-	const filteredParams: Record<
-		string,
-		string | number | Record<string, string | number>
-	> = {};
+	const filteredParams: Record<string, string | Record<string, string>> = {};
 
 	for (const field of fields) {
 		// If the field exists in the query, process it

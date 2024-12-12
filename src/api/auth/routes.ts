@@ -18,18 +18,17 @@ import {
 } from "./schemas";
 
 const router = Router();
-
+router.post(
+	"/reset-password/:token",
+	validateRequest(ResetPasswordSchema),
+	resetPasswordController,
+);
 router.post("/signup", validateRequest(RegisterSchema), registerController);
 router.post("/login", validateRequest(LoginSchema), loginController);
 router.post(
 	"/forgot-password",
 	validateRequest(ForgotPasswordSchema),
 	forgotPasswordController,
-);
-router.post(
-	"/reset-password/:token",
-	validateRequest(ResetPasswordSchema),
-	resetPasswordController,
 );
 
 router.patch(

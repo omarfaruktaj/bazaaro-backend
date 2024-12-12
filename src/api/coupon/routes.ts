@@ -23,7 +23,7 @@ router
 
 router
 	.route("/:couponId")
-	.post(
+	.put(
 		authorizeWithRoles(UserRoles.VENDOR),
 		validateRequest(UpdateCouponSchema),
 		updateController,

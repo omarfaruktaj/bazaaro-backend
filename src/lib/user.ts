@@ -1,7 +1,9 @@
 import type { RegisterSchemaType } from "@/api/auth/schemas";
 import db from "@/config/db";
-import { AppError, createHash } from "@/utils";
-import { UserRoles } from "@prisma/client";
+import { AppError, QueryBuilder, createHash } from "@/utils";
+import { TokenType, UserRoles } from "@prisma/client";
+import crypto from "node:crypto";
+import { deleteToken, findTokenWithUser } from "./token";
 
 export const findUserByEmail = (email: string) => {
 	return db.user.findUnique({
@@ -99,12 +101,56 @@ export const changeUserPassword = async (
 
 	return updatedUser;
 };
+export const resetPasswordService = async (token: string, password: string) => {
+	const hashedToken = crypto.createHash("sha256").update(token).digest("hex");
 
-export const findAllUsers = () => {
-	return db.user.findMany();
+	const tokenRecord = await findTokenWithUser(hashedToken);
+
+	if (!tokenRecord || tokenRecord.type !== TokenType.PASSWORD_RESET) {
+		throw new AppError("Invalid token", 400);
+	}
+
+	const now = new Date();
+
+	if (tokenRecord.createdAt < now) {
+		await deleteToken(tokenRecord.id);
+		throw new AppError("Token has expired", 400);
+	}
+
+	const hashedPassword = await createHash(password);
+	const updatedUser = await db.user.update({
+		where: {
+			id: tokenRecord.user.id,
+		},
+		data: {
+			password: hashedPassword,
+		},
+	});
+	await deleteToken(tokenRecord.id);
+
+	return updatedUser;
 };
 
-export const suspendUser = async (userId: string) => {
+export const findAllUsers = async (query: Record<string, unknown>) => {
+	const queryBuilder = new QueryBuilder("user", query);
+
+	const data = await queryBuilder
+		.search(["email"])
+		.filter()
+		.sort()
+		.paginate()
+		.fields()
+		.include(["profile"])
+		.execute();
+	const pagination = await queryBuilder.countTotal();
+
+	return {
+		data,
+		pagination,
+	};
+};
+
+export const UpdateUserStatus = async (userId: string) => {
 	const user = await db.user.findUnique({
 		where: {
 			id: userId,
@@ -114,14 +160,32 @@ export const suspendUser = async (userId: string) => {
 
 	if (!user) throw new AppError("No user found", 404);
 
-	return db.user.update({
-		where: {
-			id: userId,
-		},
-		data: {
-			suspended: new Date(),
-		},
+	const updatedStatus = user.suspended ? null : new Date();
+
+	const updatedUser = await db.$transaction(async (prisma) => {
+		const updatedUser = await db.user.update({
+			where: {
+				id: userId,
+			},
+			data: {
+				suspended: updatedStatus,
+			},
+		});
+		if (user.role === UserRoles.VENDOR) {
+			await db.shop.update({
+				where: {
+					userId: user.id,
+				},
+				data: {
+					isBlacklisted: !!updatedStatus,
+				},
+			});
+		}
+
+		return updatedUser;
 	});
+
+	return updatedUser;
 };
 
 export const deleteUser = async (userId: string) => {
@@ -139,7 +203,18 @@ export const deleteUser = async (userId: string) => {
 			id: userId,
 		},
 		data: {
-			suspended: new Date(),
+			deletedAt: new Date(),
+		},
+	});
+};
+
+export const getMe = (userId: string) => {
+	return db.user.findUnique({
+		where: {
+			id: userId,
+		},
+		include: {
+			profile: true,
 		},
 	});
 };

@@ -3,7 +3,7 @@ import { APIResponse } from "@/utils";
 import type { NextFunction, Request, Response } from "express";
 
 const getAll = async (req: Request, res: Response, next: NextFunction) => {
-	const category = await findAllCategory();
+	const category = await findAllCategory(req.query);
 
 	res
 		.status(200)

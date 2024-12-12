@@ -27,7 +27,7 @@ const register: RequestHandler = async (req, res, next) => {
 		envConfig.REFRESH_TOKEN_EXPIRE,
 	);
 
-	res.cookie("access-token", accessToken, {
+	res.cookie("refresh_token", accessToken, {
 		expires: new Date(
 			Date.now() + envConfig.JWT_COOKIE_EXPIRES_IN * 24 * 60 * 60 * 1000,
 		),

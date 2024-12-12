@@ -17,9 +17,9 @@ const authorizeWithRoles =
 
 		if (req.headers?.authorization?.startsWith("Bearer")) {
 			token = req.headers.authorization.split(" ")[1];
-		} else if (req.cookies["access-token"]) {
-			token = req.cookies["access-token"];
 		}
+
+		console.log(token);
 
 		if (!token)
 			return next(new AppError("Your are not logged in! Please login.", 401));

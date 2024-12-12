@@ -1,6 +1,6 @@
 import type { ProductSchemaType, UpdateProductSchemaType } from "@/api/product";
 import { db } from "@/config";
-import { AppError } from "@/utils";
+import { AppError, QueryBuilder } from "@/utils";
 import { type Prisma, type User, UserRoles } from "@prisma/client";
 import { findCategoryById } from "./category";
 import { findShopById } from "./shop";
@@ -9,7 +9,7 @@ const productSelectFields: Prisma.ProductSelect = {
 	name: true,
 	description: true,
 	categoryId: true,
-	image: true,
+	images: true,
 	price: true,
 	quantity: true,
 	shopId: true,
@@ -20,7 +20,7 @@ export const createProduct = async ({
 	name,
 	description,
 	categoryId,
-	image,
+	images,
 	price,
 	quantity,
 	shopId,
@@ -41,7 +41,7 @@ export const createProduct = async ({
 			name,
 			description,
 			categoryId,
-			image,
+			images,
 			price,
 			quantity,
 			shopId,
@@ -67,12 +67,13 @@ export const updateProduct = async (
 		name,
 		description,
 		categoryId,
-		image,
+		images,
 		price,
 		quantity,
 		discount,
 	}: UpdateProductSchemaType,
 ) => {
+	console.log(discount);
 	const product = await db.product.findUnique({
 		where: {
 			id: productId,
@@ -91,7 +92,7 @@ export const updateProduct = async (
 	if (product.shop.user.id !== userId)
 		throw new AppError("You have not permission to update others product", 404);
 
-	return db.product.update({
+	const updatedData = await db.product.update({
 		where: {
 			id: productId,
 		},
@@ -99,12 +100,14 @@ export const updateProduct = async (
 			name,
 			description,
 			categoryId,
-			image,
+			images,
 			price,
 			quantity,
 			discount,
 		},
 	});
+
+	console.log(updatedData);
 };
 
 export const deleteProduct = async (user: User, productId: string) => {
@@ -126,15 +129,46 @@ export const deleteProduct = async (user: User, productId: string) => {
 	if (product.shop.user.id !== user.id && user.role !== UserRoles.ADMIN)
 		throw new AppError("You have not permission to delete this product.", 401);
 
-	return db.product.delete({
+	return db.product.update({
 		where: {
-			id: productId,
+			id: product.id,
+		},
+		data: {
+			deletedAt: new Date(),
 		},
 	});
 };
 
-export const findAllProduct = () => {
-	return db.product.findMany();
+export const findAllProduct = async (query: Record<string, unknown>) => {
+	const queryBuilder = new QueryBuilder("product", query);
+
+	const data = await queryBuilder
+		.search(["name", "description", "category.name"])
+		.filter({ deletedAt: null })
+		.sort()
+		.paginate()
+		.fields()
+		.execute();
+	const pagination = await queryBuilder.countTotal();
+
+	return {
+		data,
+		pagination,
+	};
+};
+
+export const findProductByShopId = async (shopId: string) => {
+	try {
+		const data = await db.product.findMany({
+			where: {
+				shopId: shopId,
+			},
+		});
+
+		return data;
+	} catch (error) {
+		console.log(error);
+	}
 };
 
 export const findSingleProduct = async (productId: string) => {

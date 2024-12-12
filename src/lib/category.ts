@@ -4,8 +4,31 @@ import type {
 } from "@/api/category";
 import { db } from "@/config";
 import { AppError } from "@/utils";
+import type { ParsedQs } from "qs";
 
-export const createCategory = ({ name, description }: CategorySchemaType) => {
+export const createCategory = async ({
+	name,
+	description,
+}: CategorySchemaType) => {
+	const existedCategory = await db.category.findUnique({
+		where: { name },
+	});
+
+	if (existedCategory?.deletedAt) {
+		return db.category.update({
+			where: {
+				id: existedCategory.id,
+			},
+			data: {
+				deletedAt: null,
+			},
+		});
+	}
+
+	if (existedCategory) {
+		throw new AppError("Category already exists", 400);
+	}
+
 	return db.category.create({
 		data: {
 			name,
@@ -59,10 +82,12 @@ export const deleteCategoryById = (id: string) => {
 	});
 };
 
-export const findAllCategory = () => {
-	return db.category.findMany({
+export const findAllCategory = async (query: ParsedQs) => {
+	const categories = await db.category.findMany({
 		where: {
 			deletedAt: null,
 		},
 	});
+
+	return categories;
 };

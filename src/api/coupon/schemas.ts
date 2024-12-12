@@ -8,8 +8,8 @@ const CouponSchemaBase = z.object({
 	discountValue: z
 		.number()
 		.positive({ message: "Discount value must be positive" }),
-	startDate: z.date(),
-	endDate: z.date(),
+	startDate: z.coerce.date(),
+	endDate: z.coerce.date(),
 });
 
 export const CouponSchema = CouponSchemaBase.refine(

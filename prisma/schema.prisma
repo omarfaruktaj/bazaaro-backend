@@ -48,8 +48,8 @@ model Profile {
 model Shop {
   id             String               @id @default(uuid())
   name           String
-  description    String?
-  logo           String?
+  description    String
+  logo           String
   userId         String               @unique
   user           User                 @relation(fields: [userId], references: [id])
   product        Product[]
@@ -70,7 +70,7 @@ model Product {
   description String
   price       Float
   quantity    Int
-  image       String[]
+  images      String[]
   discount    Float?
   categoryId  String
   category    Category    @relation(fields: [categoryId], references: [id])

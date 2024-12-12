@@ -6,11 +6,17 @@ import {
 	createShopController,
 	deleteShopController,
 	findAll,
+	getProductsController,
 	updateShopController,
 } from "./controllers";
+import getVendorProfile from "./controllers/get-vendor-profile";
 import { ShopSchema, UpdateShopSchema } from "./schemas";
 
 const router = Router();
+
+router.get("/profile", authorizeWithRoles("VENDOR"), getVendorProfile);
+
+router.get("/products", authorizeWithRoles("VENDOR"), getProductsController);
 
 router
 	.route("/")
@@ -19,16 +25,21 @@ router
 		authorizeWithRoles("VENDOR"),
 		validateRequest(ShopSchema),
 		createShopController,
-	)
-	.put(
-		authorizeWithRoles("VENDOR"),
-		validateRequest(UpdateShopSchema),
-		updateShopController,
 	);
 
 router
 	.route("/:shopId")
-	.put(authorizeWithRoles("ADMIN"), blacklistShopController)
+	.put(
+		authorizeWithRoles("VENDOR"),
+		validateRequest(UpdateShopSchema),
+		updateShopController,
+	)
 	.delete(authorizeWithRoles("VENDOR", "ADMIN"), deleteShopController);
+
+router.put(
+	"/:shopId/blacklist",
+	authorizeWithRoles("ADMIN"),
+	blacklistShopController,
+);
 
 export default router;

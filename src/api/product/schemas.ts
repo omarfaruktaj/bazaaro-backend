@@ -10,7 +10,7 @@ export const ProductSchema = z.object({
 		.number()
 		.int({ message: "Quantity must be an integer" })
 		.min(1, { message: "Quantity must be at least 1" }),
-	image: z.string().url({ message: "Invalid image URL" }),
+	images: z.array(z.string().url({ message: "Invalid image URL" })),
 	discount: z
 		.number()
 		.min(0, { message: "Discount cannot be negative" })

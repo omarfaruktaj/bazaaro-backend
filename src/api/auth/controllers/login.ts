@@ -16,12 +16,12 @@ const login: RequestHandler = async (req, res, next) => {
 	const existingUser = await findUserByEmail(email);
 
 	if (!existingUser || existingUser.deletedAt) {
-		return next(new AppError("Invalid credentials", 401));
+		return next(new AppError("Invalid credentials", 400));
 	}
 
 	const isPasswordCorrect = await compareHash(password, existingUser.password);
 	if (!isPasswordCorrect) {
-		return next(new AppError("Invalid credentials", 401));
+		return next(new AppError("Invalid credentials", 400));
 	}
 
 	if (existingUser.suspended) {
@@ -40,7 +40,7 @@ const login: RequestHandler = async (req, res, next) => {
 		envConfig.REFRESH_TOKEN_EXPIRE,
 	);
 
-	res.cookie("access-token", accessToken, {
+	res.cookie("refresh_token", accessToken, {
 		expires: new Date(
 			Date.now() + envConfig.JWT_COOKIE_EXPIRES_IN * 24 * 60 * 60 * 1000,
 		),
