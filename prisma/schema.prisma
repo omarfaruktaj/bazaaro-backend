@@ -157,11 +157,12 @@ model Payment {
 }
 
 model Cart {
-  id        String     @id @default(uuid())
-  userId    String
-  shopId    String
-  user      User       @relation(fields: [userId], references: [id])
-  cartItems CartItem[]
+  id         String     @id @default(uuid())
+  userId     String
+  shopId     String
+  totalPrice Float      @default(0)
+  user       User       @relation(fields: [userId], references: [id])
+  cartItems  CartItem[]
 }
 
 model CartItem {
@@ -210,7 +211,7 @@ enum DiscountType {
 
 model Coupon {
   id            String       @id @default(uuid())
-  code          String
+  code          String       @unique
   shopId        String
   discountType  DiscountType
   discountValue Float

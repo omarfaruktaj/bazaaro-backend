@@ -1,6 +1,6 @@
 import { db } from "@/config";
 import { AppError } from "@/utils";
-import type { User } from "@prisma/client";
+import type { Product, User } from "@prisma/client";
 
 interface AddProductToCartData {
 	shopId: string;
@@ -26,6 +26,12 @@ export const getCart = async (user: User) => {
 
 	if (!cart) throw new AppError("Cart not found", 404);
 	return cart;
+};
+const calculateProductPrice = (product: Product, quantity: number) => {
+	const price = product.price * quantity;
+	const discount = product.discount || 0;
+	const discountAmount = (price * discount) / 100;
+	return price - discountAmount;
 };
 
 export const addProductToCart = async (
@@ -66,6 +72,7 @@ export const addProductToCart = async (
 						quantity,
 					},
 				},
+				totalPrice: calculateProductPrice(product, quantity),
 			},
 		});
 
@@ -88,11 +95,14 @@ export const addProductToCart = async (
 						quantity,
 					},
 				},
+				totalPrice: calculateProductPrice(product, quantity),
 			},
 		});
 
 		return cart;
 	}
+
+	const productPrice = calculateProductPrice(product, quantity);
 
 	const existingCartItem = await db.cartItem.findFirst({
 		where: {
@@ -101,7 +111,10 @@ export const addProductToCart = async (
 		},
 	});
 
+	let newTotalPrice = cart.totalPrice;
+
 	if (existingCartItem) {
+		newTotalPrice += productPrice;
 		await db.cartItem.update({
 			where: {
 				id: existingCartItem.id,
@@ -110,37 +123,25 @@ export const addProductToCart = async (
 				quantity: existingCartItem.quantity + quantity,
 			},
 		});
-
-		return cart;
+	} else {
+		newTotalPrice += productPrice;
+		await db.cartItem.create({
+			data: {
+				cartId: cart.id,
+				productId: product.id,
+				quantity: quantity,
+			},
+		});
 	}
 
-	// if (cart.shopId !== shopId) {
-	// 	const cartData = await db.cart.create({
-	// 		data: {
-	// 			shopId,
-	// 			userId: user.id,
-	// 			cartItems: {
-	// 				create: {
-	// 					productId,
-	// 					quantity,
-	// 				},
-	// 			},
-	// 		},
-	// 	});
-
-	// 	return cartData;
-	// }
-
-	await db.cartItem.create({
-		data: {
-			cartId: cart.id,
-			productId: product.id,
-			quantity: quantity,
-		},
+	await db.cart.update({
+		where: { id: cart.id },
+		data: { totalPrice: newTotalPrice },
 	});
 
 	return cart;
 };
+
 export const updateCartItemQuantity = async (
 	cartItemId: string,
 	quantity: number,
@@ -149,17 +150,31 @@ export const updateCartItemQuantity = async (
 		where: {
 			id: cartItemId,
 		},
+		include: {
+			product: true,
+		},
 	});
 
 	if (!cartItem) throw new AppError("Cart item not found", 400);
 
-	const product = await db.product.findUnique({
-		where: { id: cartItem.productId },
-	});
+	const product = cartItem.product;
 
-	if (!product || product.quantity < quantity) {
+	if (product.quantity < quantity) {
 		throw new AppError("Insufficient stock for the requested quantity", 400);
 	}
+
+	const cart = await db.cart.findUnique({
+		where: { id: cartItem.cartId },
+		include: {
+			cartItems: true,
+		},
+	});
+
+	if (!cart) throw new AppError("Cart not found", 404);
+
+	const oldItemPrice = calculateProductPrice(product, cartItem.quantity);
+
+	const newItemPrice = calculateProductPrice(product, quantity);
 
 	await db.cartItem.update({
 		where: {
@@ -169,6 +184,17 @@ export const updateCartItemQuantity = async (
 			quantity,
 		},
 	});
+
+	const priceDifference = newItemPrice - oldItemPrice;
+
+	const newTotalPrice = cart.totalPrice + priceDifference;
+
+	await db.cart.update({
+		where: { id: cart.id },
+		data: { totalPrice: newTotalPrice },
+	});
+
+	return newTotalPrice;
 };
 
 export const deleteCartItem = async (cartItemId: string) => {
@@ -176,12 +202,32 @@ export const deleteCartItem = async (cartItemId: string) => {
 		where: {
 			id: cartItemId,
 		},
+		include: {
+			product: true,
+		},
 	});
 
 	if (!cartItem) throw new AppError("Cart item not found", 400);
 
+	const product = cartItem.product;
+	const itemPrice = calculateProductPrice(product, cartItem.quantity);
+
 	const deletedCartItem = await db.cartItem.delete({
 		where: { id: cartItemId },
 	});
+
+	const cart = await db.cart.findUnique({
+		where: { id: cartItem.cartId },
+	});
+
+	if (!cart) throw new AppError("Cart not found", 400);
+
+	const newTotalPrice = cart.totalPrice - itemPrice;
+
+	await db.cart.update({
+		where: { id: cart.id },
+		data: { totalPrice: newTotalPrice },
+	});
+
 	return deletedCartItem;
 };

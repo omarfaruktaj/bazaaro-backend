@@ -130,3 +130,74 @@ export const deleteCoupon = async (user: User, couponId: string) => {
 
 	return result;
 };
+export const applyCoupon = async (user: User, couponCode: string) => {
+	const existedCoupon = await db.coupon.findUnique({
+		where: {
+			code: couponCode,
+		},
+	});
+
+	if (!existedCoupon) throw new AppError("Invalid Coupon code", 400);
+
+	const shop = await db.shop.findUnique({
+		where: {
+			id: existedCoupon.shopId,
+		},
+	});
+
+	if (!shop) throw new AppError("Invalid Coupon code", 404);
+
+	const currentDate = new Date();
+
+	if (existedCoupon.startDate > currentDate) {
+		throw new AppError("Coupon is not yet valid", 400);
+	}
+
+	if (existedCoupon.endDate && existedCoupon.endDate < currentDate) {
+		throw new AppError("Coupon has expired", 400);
+	}
+
+	const cart = await db.cart.findFirst({
+		where: {
+			userId: user.id,
+		},
+		include: {
+			cartItems: {
+				include: {
+					product: true,
+				},
+			},
+		},
+	});
+
+	if (!cart) throw new AppError("User does not have a cart", 404);
+
+	if (cart?.shopId !== existedCoupon.shopId)
+		throw new AppError("Coupon is not valid for the current shop", 400);
+
+	const totalCartPrice = cart.cartItems.reduce((total, item) => {
+		return total + item.product.price * item.quantity;
+	}, 0);
+
+	let discountAmount = 0;
+
+	if (existedCoupon.discountType === "PERCENTAGE") {
+		discountAmount = (totalCartPrice * existedCoupon.discountValue) / 100;
+	} else if (existedCoupon.discountType === "FIXED") {
+		discountAmount = existedCoupon.discountValue;
+	}
+
+	discountAmount = Math.min(discountAmount, totalCartPrice);
+
+	const newTotalPrice = totalCartPrice - discountAmount;
+
+	await db.cart.update({
+		where: { id: cart.id },
+		data: { totalPrice: newTotalPrice },
+	});
+
+	return {
+		newTotalPrice,
+		discountAmount,
+	};
+};

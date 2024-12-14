@@ -1,8 +1,8 @@
-import crypto from "node:crypto";
 import type { RegisterSchemaType } from "@/api/auth/schemas";
 import db from "@/config/db";
-import { AppError, QueryBuilder, createHash } from "@/utils";
+import { AppError, QueryBuilder, compareHash, createHash } from "@/utils";
 import { TokenType, UserRoles } from "@prisma/client";
+import crypto from "node:crypto";
 import { deleteToken, findTokenWithUser } from "./token";
 
 export const findUserByEmail = (email: string) => {
@@ -85,7 +85,9 @@ export const changeUserPassword = async (
 
 	if (!user) throw new AppError("No user found.", 404);
 
-	if (user.password !== currentPassword)
+	const isPasswordCorrect = await compareHash(currentPassword, user.password);
+
+	if (!isPasswordCorrect)
 		throw new AppError("Your current password is wrong.", 400);
 
 	const hashedPassword = await createHash(newPassword);
