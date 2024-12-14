@@ -98,6 +98,22 @@ export const blackListShop = async (shopId: string) => {
 		},
 	});
 };
+export const findSingleShop = async (shopId: string) => {
+	const shop = await db.shop.findUnique({
+		where: {
+			id: shopId,
+		},
+		include: {
+			review: true,
+			shopFollow: true,
+		},
+	});
+	console.log(shop);
+
+	if (!shop) throw new AppError("No shop found", 404);
+
+	return shop;
+};
 
 export const findAllShop = () => {
 	return db.shop.findMany();
@@ -116,7 +132,7 @@ export const findProfile = async (user: User) => {
 	if (!shop) throw new AppError("No shop found", 404);
 
 	const averageRating =
-		shop.review.length > 0
+		shop.review?.length > 0
 			? shop.review.reduce((sum, review) => sum + review.rating, 0) /
 				shop.review.length
 			: 0;
@@ -139,4 +155,42 @@ export const findShopProducts = async (user: User) => {
 	const products = await findProductByShopId(shop.id);
 
 	return products;
+};
+
+export const followUnfollowShop = async (user: User, shopId: string) => {
+	const shop = await db.shop.findUnique({
+		where: {
+			id: shopId,
+		},
+	});
+
+	if (!shop) throw new AppError("No shop found", 404);
+
+	const existingFollow = await db.shopFollow.findUnique({
+		where: {
+			shopId_userId: {
+				userId: user.id,
+				shopId: shop.id,
+			},
+		},
+	});
+
+	if (existingFollow) {
+		const followData = await db.shopFollow.delete({
+			where: {
+				id: existingFollow.id,
+			},
+		});
+
+		return followData;
+	}
+
+	const follow = await db.shopFollow.create({
+		data: {
+			shopId: shop.id,
+			userId: user.id,
+		},
+	});
+
+	return follow;
 };

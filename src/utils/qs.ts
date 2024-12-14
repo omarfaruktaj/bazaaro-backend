@@ -107,6 +107,7 @@ function filterNestedQueryParams(
 		"in",
 		"notIn",
 		"contains",
+		"not",
 		"startsWith",
 		"endsWith",
 		// Add more operators as necessary

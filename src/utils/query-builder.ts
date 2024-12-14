@@ -3,6 +3,7 @@ import type { Prisma, PrismaClient } from "@prisma/client";
 
 class QueryBuilder<T> {
 	private db: PrismaClient;
+	// biome-ignore lint/suspicious/noExplicitAny: <explanation>
 	private where: Record<string, any> = {};
 	private orderBy: Record<string, Prisma.SortOrder>[] | undefined;
 	private pagination: { skip: number; take: number } | undefined;
@@ -11,6 +12,7 @@ class QueryBuilder<T> {
 
 	constructor(
 		public model: keyof PrismaClient,
+		// biome-ignore lint/suspicious/noExplicitAny: <explanation>
 		public query: Record<string, any>,
 	) {
 		this.db = db;
@@ -44,6 +46,7 @@ class QueryBuilder<T> {
 	}
 
 	// Filter query parameters
+	// biome-ignore lint/suspicious/noExplicitAny: <explanation>
 	filter(customFilters?: Record<string, any>) {
 		const excludeFields = [
 			"searchTerm",
@@ -111,6 +114,7 @@ class QueryBuilder<T> {
 						if (!acc[model]) {
 							acc[model] = { select: {} };
 						}
+						// biome-ignore lint/suspicious/noExplicitAny: <explanation>
 						(acc[model] as any).select[fieldName] = true;
 					} else {
 						acc[parts[0]] = true;
@@ -122,28 +126,84 @@ class QueryBuilder<T> {
 		}
 		return this;
 	}
+	include(relations?: string[]) {
+		let includeParam = relations?.join(",");
 
-	// Include relational data (using Prisma's `include`)
-	include(relations: string[]) {
-		this.includeRelations = relations.reduce(
-			(acc, relation) => {
-				const parts = relation.trim().split(".");
+		if (this.query?.include) {
+			includeParam = this.query?.include;
+		}
 
-				if (parts.length === 2) {
-					const [model, relationName] = parts;
-					if (!acc[model]) {
-						acc[model] = { include: {} };
+		if (includeParam) {
+			this.includeRelations = includeParam.split(",").reduce(
+				(acc, relation) => {
+					const parts = relation.trim().split(".");
+
+					// Handling direct relations (e.g., "author", "category")
+					if (parts.length === 1) {
+						acc[parts[0]] = true;
 					}
-					(acc[model] as any).include[relationName] = true;
-				} else {
-					acc[parts[0]] = true;
-				}
-				return acc;
-			},
-			{} as Record<string, unknown>,
-		);
+					// Handling nested relations (e.g., "author.profile", "category.posts")
+					else if (parts.length === 2) {
+						const [model, relationName] = parts;
+						if (!acc[model]) {
+							acc[model] = { include: {} };
+						}
+						// biome-ignore lint/suspicious/noExplicitAny: <explanation>
+						(acc[model] as any).include[relationName] = true;
+					}
+					// Handling deeper nested relations (e.g., "author.profile.posts")
+					else if (parts.length === 3) {
+						const [model, relationName, nestedRelation] = parts;
+						if (!acc[model]) {
+							acc[model] = { include: {} };
+						}
+						// biome-ignore lint/suspicious/noExplicitAny: <explanation>
+						if (!(acc[model] as any).include[relationName]) {
+							// biome-ignore lint/suspicious/noExplicitAny: <explanation>
+							(acc[model] as any).include[relationName] = { include: {} };
+						}
+						// biome-ignore lint/suspicious/noExplicitAny: <explanation>
+						(acc[model] as any).include[relationName].include[nestedRelation] =
+							true;
+					}
+					return acc;
+					// biome-ignore lint/suspicious/noExplicitAny: <explanation>
+				},
+				// biome-ignore lint/suspicious/noExplicitAny: <explanation>
+				{} as Record<string, any>,
+			);
+		}
+
 		return this;
 	}
+	// Include relational data (using Prisma's `include`)
+	// include(relations?: string[]) {
+	// 	let includeParam = relations?.join(",");
+
+	// 	if (this.query?.fields) {
+	// 		includeParam = this.query?.include;
+	// 	}
+
+	// 	this.includeRelations = relations.reduce(
+	// 		(acc, relation) => {
+	// 			const parts = relation.trim().split(".");
+
+	// 			if (parts.length === 2) {
+	// 				const [model, relationName] = parts;
+	// 				if (!acc[model]) {
+	// 					acc[model] = { include: {} };
+	// 				}
+	// 				// biome-ignore lint/suspicious/noExplicitAny: <explanation>
+	// 				(acc[model] as any).include[relationName] = true;
+	// 			} else {
+	// 				acc[parts[0]] = true;
+	// 			}
+	// 			return acc;
+	// 		},
+	// 		{} as Record<string, unknown>,
+	// 	);
+	// 	return this;
+	// }
 
 	// Execute query
 	async execute() {

@@ -147,6 +147,7 @@ export const findAllProduct = async (query: Record<string, unknown>) => {
 		.filter({ deletedAt: null })
 		.sort()
 		.paginate()
+		.include()
 		.fields()
 		.execute();
 	const pagination = await queryBuilder.countTotal();
@@ -178,6 +179,16 @@ export const findSingleProduct = async (productId: string) => {
 		},
 		include: {
 			shop: true,
+			category: true,
+			review: {
+				include: {
+					user: {
+						include: {
+							profile: true,
+						},
+					},
+				},
+			},
 		},
 	});
 

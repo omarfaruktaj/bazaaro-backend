@@ -17,6 +17,9 @@ export const getCart = async (user: User) => {
 				include: {
 					product: true,
 				},
+				orderBy: {
+					createdAt: "asc",
+				},
 			},
 		},
 	});
@@ -27,7 +30,7 @@ export const getCart = async (user: User) => {
 
 export const addProductToCart = async (
 	user: User,
-	{ shopId, productId, quantity = 1 }: AddProductToCartData,
+	{ productId, quantity = 1 }: AddProductToCartData,
 ) => {
 	const product = await db.product.findUnique({
 		where: {
@@ -55,7 +58,7 @@ export const addProductToCart = async (
 	if (!cart) {
 		const cartData = await db.cart.create({
 			data: {
-				shopId,
+				shopId: product.shopId,
 				userId: user.id,
 				cartItems: {
 					create: {
@@ -87,6 +90,8 @@ export const addProductToCart = async (
 				},
 			},
 		});
+
+		return cart;
 	}
 
 	const existingCartItem = await db.cartItem.findFirst({
@@ -102,27 +107,29 @@ export const addProductToCart = async (
 				id: existingCartItem.id,
 			},
 			data: {
-				quantity: existingCartItem.quantity + 1,
-			},
-		});
-	}
-
-	if (cart.shopId !== shopId) {
-		const cartData = await db.cart.create({
-			data: {
-				shopId,
-				userId: user.id,
-				cartItems: {
-					create: {
-						productId,
-						quantity,
-					},
-				},
+				quantity: existingCartItem.quantity + quantity,
 			},
 		});
 
-		return cartData;
+		return cart;
 	}
+
+	// if (cart.shopId !== shopId) {
+	// 	const cartData = await db.cart.create({
+	// 		data: {
+	// 			shopId,
+	// 			userId: user.id,
+	// 			cartItems: {
+	// 				create: {
+	// 					productId,
+	// 					quantity,
+	// 				},
+	// 			},
+	// 		},
+	// 	});
+
+	// 	return cartData;
+	// }
 
 	await db.cartItem.create({
 		data: {

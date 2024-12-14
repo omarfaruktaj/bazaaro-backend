@@ -6,7 +6,9 @@ import {
 	createShopController,
 	deleteShopController,
 	findAll,
+	followShop,
 	getProductsController,
+	getSingleShop,
 	updateShopController,
 } from "./controllers";
 import getVendorProfile from "./controllers/get-vendor-profile";
@@ -17,18 +19,14 @@ const router = Router();
 router.get("/profile", authorizeWithRoles("VENDOR"), getVendorProfile);
 
 router.get("/products", authorizeWithRoles("VENDOR"), getProductsController);
-
-router
-	.route("/")
-	.get(authorizeWithRoles("ADMIN"), findAll)
-	.post(
-		authorizeWithRoles("VENDOR"),
-		validateRequest(ShopSchema),
-		createShopController,
-	);
-
+router.get(
+	"/:shopId/follow",
+	authorizeWithRoles("CUSTOMER", "ADMIN", "VENDOR"),
+	followShop,
+);
 router
 	.route("/:shopId")
+	.get(getSingleShop)
 	.put(
 		authorizeWithRoles("VENDOR"),
 		validateRequest(UpdateShopSchema),
@@ -41,5 +39,14 @@ router.put(
 	authorizeWithRoles("ADMIN"),
 	blacklistShopController,
 );
+
+router
+	.route("/")
+	.get(authorizeWithRoles("ADMIN"), findAll)
+	.post(
+		authorizeWithRoles("VENDOR"),
+		validateRequest(ShopSchema),
+		createShopController,
+	);
 
 export default router;

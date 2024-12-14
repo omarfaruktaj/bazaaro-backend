@@ -1,8 +1,8 @@
+import crypto from "node:crypto";
 import type { RegisterSchemaType } from "@/api/auth/schemas";
 import db from "@/config/db";
 import { AppError, QueryBuilder, createHash } from "@/utils";
 import { TokenType, UserRoles } from "@prisma/client";
-import crypto from "node:crypto";
 import { deleteToken, findTokenWithUser } from "./token";
 
 export const findUserByEmail = (email: string) => {
