@@ -15,7 +15,6 @@ export const getOrders = async (user: User, query: Record<string, unknown>) => {
 			.fields()
 			.execute();
 		const pagination = await queryBuilder.countTotal();
-		console.log(pagination);
 		return {
 			data,
 			pagination,

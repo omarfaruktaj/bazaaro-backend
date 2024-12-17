@@ -85,7 +85,6 @@ const handleProductionError = (err: AppError, _req: Request, res: Response) => {
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 const globalErrorHandler: ErrorRequestHandler = (error, req, res, _next) => {
-	console.log(error);
 	if (envConfig.NODE_ENV === "development") {
 		handleDevelopmentError(error, req, res);
 	} else if (envConfig.NODE_ENV === "production") {

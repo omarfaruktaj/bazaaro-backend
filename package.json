@@ -2,14 +2,14 @@
   "name": "bazaaro",
   "packageManager": "yarn@4.5.1",
   "scripts": {
-    "build": "tsc && tsc-alias ",
+    "build": "tsc && tsc-alias",
     "dev": "ts-node-dev --env-file=.env -r tsconfig-paths/register  src/server.ts",
     "start": "node --env-file=.env dist/server.js",
     "format": "biome format --write src",
     "lint": "biome lint --write  src",
     "lint:fix": "biome lint  --write --unsafe src",
     "format-lint": "biome check --write src",
-    "postinstall": "husky"
+    "postinstall": "prisma generate"
   },
   "dependencies": {
     "@prisma/client": "^6.0.1",

@@ -1,12 +1,6 @@
 import { envConfig } from "@/config";
 import { findUserByEmail } from "@/lib";
-import {
-	APIResponse,
-	AppError,
-	compareHash,
-	generateJWTToken,
-	logger,
-} from "@/utils";
+import { APIResponse, AppError, compareHash, generateJWTToken } from "@/utils";
 import type { RequestHandler } from "express";
 import type { loginSchemaType } from "../schemas";
 
@@ -28,7 +22,7 @@ const login: RequestHandler = async (req, res, next) => {
 		return next(new AppError("User account has been suspended", 400));
 	}
 
-	logger.info(`User logged in: ${existingUser.email}`);
+	// logger.info(`User logged in: ${existingUser.email}`);
 	const accessToken = generateJWTToken(
 		{ id: existingUser.id, role: existingUser.role },
 		envConfig.ACCESS_TOKEN_SECRET,

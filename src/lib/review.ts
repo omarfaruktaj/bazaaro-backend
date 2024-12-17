@@ -223,7 +223,6 @@ export const createReviewResponse = async (
 	reviewId: string,
 	{ response }: ReviewResponseSchemaType,
 ) => {
-	console.log(response, reviewId);
 	const existReview = await db.review.findUnique({
 		where: { id: reviewId },
 		include: {

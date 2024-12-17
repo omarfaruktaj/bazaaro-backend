@@ -1,10 +1,10 @@
-import crypto from "node:crypto";
-import { env } from "node:process";
 import { createToken, deleteToken, findUserByEmail } from "@/lib";
 import { APIResponse, AppError } from "@/utils";
 import { Email } from "@/utils/email";
 import { TokenType } from "@prisma/client";
 import type { RequestHandler } from "express";
+import crypto from "node:crypto";
+import { env } from "node:process";
 import type { ForgotPasswordSchemaType } from "../schemas";
 
 const forgotPassword: RequestHandler = async (req, res, next) => {
@@ -89,11 +89,9 @@ const forgotPassword: RequestHandler = async (req, res, next) => {
 		const email = new Email();
 
 		const sendmail = await email.send(mailOptions);
-		console.log(sendmail);
 
 		res.status(200).json(new APIResponse(200, "Password reset email sent"));
 	} catch (error) {
-		console.log(error);
 		await deleteToken(token.id);
 
 		throw new AppError(

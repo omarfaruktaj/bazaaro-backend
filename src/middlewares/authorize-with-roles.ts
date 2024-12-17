@@ -19,8 +19,6 @@ const authorizeWithRoles =
 			token = req.headers.authorization.split(" ")[1];
 		}
 
-		console.log(token);
-
 		if (!token)
 			return next(new AppError("Your are not logged in! Please login.", 401));
 

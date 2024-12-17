@@ -14,7 +14,6 @@ interface DecodedToken {
 
 const refreshAccessToken: RequestHandler = async (req, res, next) => {
 	const token = req.cookies.refresh_token || req.body.refreshToken;
-	console.log(req.cookies);
 
 	if (!token) return next(new AppError("UNAUTHORIZED", 401));
 

@@ -73,7 +73,6 @@ export const updateProduct = async (
 		discount,
 	}: UpdateProductSchemaType,
 ) => {
-	console.log(discount);
 	const product = await db.product.findUnique({
 		where: {
 			id: productId,
@@ -106,8 +105,6 @@ export const updateProduct = async (
 			discount,
 		},
 	});
-
-	console.log(updatedData);
 };
 
 export const deleteProduct = async (user: User, productId: string) => {

@@ -1,6 +1,6 @@
 import { envConfig } from "@/config";
 import { createUser } from "@/lib";
-import { APIResponse, generateJWTToken, logger } from "@/utils";
+import { APIResponse, generateJWTToken } from "@/utils";
 import type { RequestHandler } from "express";
 import type { RegisterSchemaType } from "../schemas";
 
@@ -14,7 +14,7 @@ const register: RequestHandler = async (req, res, next) => {
 		password,
 	});
 
-	logger.info(`User login in: ${newUser.email}`);
+	// logger.info(`User login in: ${newUser.email}`);
 
 	const accessToken = generateJWTToken(
 		{ id: newUser.id, role: newUser.role },

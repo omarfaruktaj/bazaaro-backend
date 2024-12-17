@@ -25,7 +25,7 @@ app.use("/", basicRoutes);
 app.use("/api", apiRoutes);
 
 // Handle undefined routes
-app.all("/*splat", (_req: Request, _res: Response, next: NextFunction) => {
+app.use((_req: Request, _res: Response, next: NextFunction) => {
 	next(new AppError("The endpoint you requested does not exist.", 404));
 });
 

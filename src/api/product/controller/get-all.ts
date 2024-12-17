@@ -15,7 +15,6 @@ const getAll = async (req: Request, res: Response, next: NextFunction) => {
 		"shopId",
 		"id",
 	]);
-	console.log(query);
 	const { data, pagination } = await findAllProduct(query);
 
 	res
