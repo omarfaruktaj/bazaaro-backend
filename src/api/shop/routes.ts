@@ -42,7 +42,7 @@ router.put(
 
 router
 	.route("/")
-	.get(authorizeWithRoles("ADMIN"), findAll)
+	.get(findAll)
 	.post(
 		authorizeWithRoles("VENDOR"),
 		validateRequest(ShopSchema),

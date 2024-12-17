@@ -18,4 +18,5 @@ export const envConfig = cleanEnv(process.env, {
 	EMAIL_FROM: str(),
 	SENDER_EMAIL: str(),
 	SENDER_APP_PASSWORD: str(),
+	STRIPE_SECRET_KEY: str(),
 });

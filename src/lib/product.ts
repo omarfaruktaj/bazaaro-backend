@@ -180,13 +180,18 @@ export const findSingleProduct = async (productId: string) => {
 		include: {
 			shop: true,
 			category: true,
+
 			review: {
+				where: {
+					deletedAt: null,
+				},
 				include: {
 					user: {
 						include: {
 							profile: true,
 						},
 					},
+					reviewResponse: true,
 				},
 			},
 		},

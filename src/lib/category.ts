@@ -8,6 +8,7 @@ import type { ParsedQs } from "qs";
 
 export const createCategory = async ({
 	name,
+	icon,
 	description,
 }: CategorySchemaType) => {
 	const existedCategory = await db.category.findUnique({
@@ -32,6 +33,7 @@ export const createCategory = async ({
 	return db.category.create({
 		data: {
 			name,
+			icon,
 			description,
 		},
 	});
@@ -39,7 +41,7 @@ export const createCategory = async ({
 
 export const updateCategory = async (
 	id: string,
-	{ name, description }: UpdateCategorySchemaType,
+	{ name, icon, description }: UpdateCategorySchemaType,
 ) => {
 	const existedCategory = await findCategoryById(id);
 
@@ -51,6 +53,7 @@ export const updateCategory = async (
 		},
 		data: {
 			name,
+			icon,
 			description,
 		},
 	});

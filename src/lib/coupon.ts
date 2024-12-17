@@ -175,9 +175,14 @@ export const applyCoupon = async (user: User, couponCode: string) => {
 	if (cart?.shopId !== existedCoupon.shopId)
 		throw new AppError("Coupon is not valid for the current shop", 400);
 
-	const totalCartPrice = cart.cartItems.reduce((total, item) => {
-		return total + item.product.price * item.quantity;
-	}, 0);
+	const totalCartPrice =
+		cart.cartItems?.reduce((total, item) => {
+			const discountedPrice = item.product.discount
+				? item.product.price -
+					(item.product.price * item.product.discount) / 100
+				: item.product.price;
+			return total + discountedPrice * item.quantity;
+		}, 0) || 0;
 
 	let discountAmount = 0;
 
@@ -193,7 +198,7 @@ export const applyCoupon = async (user: User, couponCode: string) => {
 
 	await db.cart.update({
 		where: { id: cart.id },
-		data: { totalPrice: newTotalPrice },
+		data: { totalPrice: newTotalPrice, discount: discountAmount },
 	});
 
 	return {

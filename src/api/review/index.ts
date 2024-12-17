@@ -1,2 +1,2 @@
-export { default as productRoutes } from "./routes";
+export { default as reviewRoutes } from "./routes";
 export * from "./schemas";

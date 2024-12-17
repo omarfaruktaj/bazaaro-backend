@@ -1,6 +1,6 @@
 import type { ShopSchemaType, UpdateShopSchemaType } from "@/api/shop";
 import { db } from "@/config";
-import { AppError } from "@/utils";
+import { AppError, QueryBuilder } from "@/utils";
 import { type User, UserRoles } from "@prisma/client";
 import { findProductByShopId } from "./product";
 
@@ -98,6 +98,7 @@ export const blackListShop = async (shopId: string) => {
 		},
 	});
 };
+
 export const findSingleShop = async (shopId: string) => {
 	const shop = await db.shop.findUnique({
 		where: {
@@ -115,8 +116,23 @@ export const findSingleShop = async (shopId: string) => {
 	return shop;
 };
 
-export const findAllShop = () => {
-	return db.shop.findMany();
+export const findAllShop = async (query: Record<string, unknown>) => {
+	const queryBuilder = new QueryBuilder("shop", query);
+
+	const data = await queryBuilder
+		.filter()
+		.sort()
+		.paginate()
+		.fields()
+		.include()
+		.execute();
+
+	const pagination = await queryBuilder.countTotal();
+
+	return {
+		data,
+		pagination,
+	};
 };
 
 export const findProfile = async (user: User) => {

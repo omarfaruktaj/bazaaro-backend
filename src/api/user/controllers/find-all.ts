@@ -10,6 +10,7 @@ const findAll = async (req: Request, res: Response, next: NextFunction) => {
 		"sort",
 		"fields",
 		"include",
+		"role",
 	]);
 
 	const { data, pagination } = await findAllUsers(query);

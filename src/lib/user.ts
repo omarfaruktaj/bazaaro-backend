@@ -1,7 +1,7 @@
 import type { RegisterSchemaType } from "@/api/auth/schemas";
 import db from "@/config/db";
 import { AppError, QueryBuilder, compareHash, createHash } from "@/utils";
-import { TokenType, UserRoles } from "@prisma/client";
+import { type Profile, TokenType, type User, UserRoles } from "@prisma/client";
 import crypto from "node:crypto";
 import { deleteToken, findTokenWithUser } from "./token";
 
@@ -103,6 +103,7 @@ export const changeUserPassword = async (
 
 	return updatedUser;
 };
+
 export const resetPasswordService = async (token: string, password: string) => {
 	const hashedToken = crypto.createHash("sha256").update(token).digest("hex");
 
@@ -219,4 +220,32 @@ export const getMe = (userId: string) => {
 			profile: true,
 		},
 	});
+};
+
+export const updateMyProfile = async (
+	user: User,
+	{ name, address, avatar, bio, phone }: Profile,
+) => {
+	const profile = await db.profile.findUnique({
+		where: {
+			userId: user.id,
+		},
+	});
+
+	if (!profile) throw new AppError("No profile found", 404);
+
+	const updatedProfile = await db.profile.update({
+		where: {
+			id: profile.id,
+		},
+		data: {
+			name,
+			address,
+			avatar,
+			bio,
+			phone,
+		},
+	});
+
+	return updateMyProfile;
 };

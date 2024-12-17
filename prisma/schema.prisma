@@ -88,6 +88,7 @@ model Product {
 model Category {
   id          String    @id @default(uuid())
   name        String    @unique
+  icon        String    @default("")
   description String?
   product     Product[]
   deletedAt   DateTime?
@@ -117,7 +118,6 @@ model Order {
   id            String         @id @default(uuid())
   totalAmount   Float
   discount      Float          @default(0)
-  finalTotal    Float
   status        OrderStatus
   userId        String
   shopId        String
@@ -161,6 +161,7 @@ model Cart {
   userId     String
   shopId     String
   totalPrice Float      @default(0)
+  discount   Float      @default(0)
   user       User       @relation(fields: [userId], references: [id])
   cartItems  CartItem[]
 }
@@ -176,24 +177,26 @@ model CartItem {
 }
 
 model Review {
-  id             String               @id @default(uuid())
+  id             String              @id @default(uuid())
   userId         String
   shopId         String
   productId      String
   rating         Int
   review         String?
-  user           User                 @relation(fields: [userId], references: [id])
-  shop           Shop                 @relation(fields: [shopId], references: [id])
-  product        Product              @relation(fields: [productId], references: [id])
+  user           User                @relation(fields: [userId], references: [id])
+  shop           Shop                @relation(fields: [shopId], references: [id])
+  product        Product             @relation(fields: [productId], references: [id])
   deletedAt      DateTime?
-  createdAt      DateTime             @default(now())
-  updatedAt      DateTime             @updatedAt
-  reviewResponse ShopReviewResponse[]
+  createdAt      DateTime            @default(now())
+  updatedAt      DateTime            @updatedAt
+  reviewResponse ShopReviewResponse?
+
+  @@unique([userId, productId])
 }
 
 model ShopReviewResponse {
   id        String    @id @default(uuid())
-  reviewId  String
+  reviewId  String    @unique
   shopId    String
   response  String
   review    Review    @relation(fields: [reviewId], references: [id])

@@ -7,7 +7,7 @@ import {
 	getAllController,
 	updateController,
 } from "./controllers";
-import { OrderSchema, OrderStatusSchema } from "./schemas";
+import { OrderStatusSchema } from "./schemas";
 
 const router = Router();
 
@@ -22,7 +22,7 @@ router
 	.route("/")
 	.post(
 		authorizeWithRoles(UserRoles.CUSTOMER),
-		validateRequest(OrderSchema),
+		// validateRequest(OrderSchema),
 		createController,
 	)
 	.get(
