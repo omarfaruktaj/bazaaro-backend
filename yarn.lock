@@ -826,7 +826,7 @@ __metadata:
     jsonwebtoken: "npm:^9.0.2"
     morgan: "npm:^1.10.0"
     nodemailer: "npm:^6.9.16"
-    prisma: "npm:^6.0.1"
+    prisma: "npm:6.0.1"
     stripe: "npm:^17.4.0"
     ts-node-dev: "npm:^2.0.0"
     tsc: "npm:^2.0.4"
@@ -2587,7 +2587,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"prisma@npm:^6.0.1":
+"prisma@npm:6.0.1":
   version: 6.0.1
   resolution: "prisma@npm:6.0.1"
   dependencies:
