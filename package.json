@@ -1,6 +1,6 @@
 {
   "name": "bazaaro",
-  "packageManager": "yarn@4.5.1",
+  "packageManager": "yarn@4.9.2",
   "scripts": {
     "build": "tsc && tsc-alias",
     "dev": "ts-node-dev --env-file=.env -r tsconfig-paths/register  src/server.ts",
