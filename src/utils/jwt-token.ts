@@ -1,23 +1,24 @@
 import type { UserRoles } from "@prisma/client";
-import jwt from "jsonwebtoken";
+import jwt, { Secret, SignOptions, Algorithm } from "jsonwebtoken";
 
 interface Payload {
-	id: string;
-	role: UserRoles;
+  id: string;
+  role: UserRoles;
 }
 
 export const generateJWTToken = (
-	payload: Payload,
-	secret: jwt.Secret,
-	expiresIn: string | number = "1h",
-	algorithm: jwt.Algorithm = "HS256",
+  payload: Payload,
+  secret: Secret,
+  expiresIn: SignOptions["expiresIn"] = "1h",
+  algorithm: Algorithm = "HS256"
 ) => {
-	return jwt.sign(payload, secret, {
-		algorithm,
-		expiresIn,
-	});
+  const options: SignOptions = {
+    expiresIn,
+    algorithm,
+  };
+  return jwt.sign(payload, secret, options);
 };
 
 export const verifyJWTToken = (token: string, secret: string) => {
-	return jwt.verify(token, secret);
+  return jwt.verify(token, secret);
 };

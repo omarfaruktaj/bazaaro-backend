@@ -1,0 +1,351 @@
+@baseUrl = http://localhost:5000
+@apiUrl = {{baseUrl}}/api
+@authToken = Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImQxMmI5M2E1LTA0YTYtNDgxOS1iOWQzLTk5MzYxNGIzZmUwMSIsInJvbGUiOiJDVVNUT01FUiIsImlhdCI6MTc1MzUyMDU1OSwiZXhwIjoxNzUzNjA2OTU5fQ.0G4mpUFg8fQlilmF-U2UIZTBr_oZiNgGGJR3sJAtAzQ
+
+### Base Routes ###
+### Health Check
+GET {{baseUrl}}/health
+
+### Welcome Route
+GET {{baseUrl}}
+
+### Auth Routes 
+### Register new user
+POST {{apiUrl}}/auth/signup
+Content-Type: application/json
+
+{
+    "name": "Test User",
+    "email": "test@example.com",
+    "password": "password123",
+    "role": "CUSTOMER"
+}
+
+### Login
+POST {{apiUrl}}/auth/login
+Content-Type: application/json
+
+{
+    "email": "customer@gmail.com",
+    "password": "123456"
+}
+
+### Refresh Token
+POST {{apiUrl}}/auth/refresh-token
+Content-Type: application/json
+
+{
+    "refreshToken": "your_refresh_token_here"
+}
+
+### Forgot Password
+POST {{apiUrl}}/auth/forgot-password
+Content-Type: application/json
+
+{
+    "email": "test@example.com"
+}
+
+### Reset Password
+POST {{apiUrl}}/auth/reset-password/:token
+Content-Type: application/json
+
+{
+    "password": "newpassword123"
+}
+
+### Change Password
+PATCH {{apiUrl}}/auth/change-password
+Authorization: {{authToken}}
+Content-Type: application/json
+
+{
+    "currentPassword": "oldpassword",
+    "newPassword": "newpassword123"
+}
+
+### User Routes ###
+### Get Current User Profile
+GET {{apiUrl}}/users/me
+Authorization: {{authToken}}
+
+### Update Profile
+PUT {{apiUrl}}/users/me
+Authorization: {{authToken}}
+Content-Type: application/json
+
+{
+    "name": "Updated Name"
+}
+
+### Get All Users (Admin only)
+GET {{apiUrl}}/users
+Authorization: {{authToken}}
+
+### Change User Status (Admin only)
+PATCH {{apiUrl}}/users/change-status/:userId
+Authorization: {{authToken}}
+
+### Delete User (Admin only)
+DELETE {{apiUrl}}/users/:userId
+Authorization: {{authToken}}
+
+### Shop Routes ###
+### Create Shop (Vendor only)
+POST {{apiUrl}}/shop
+Authorization: {{authToken}}
+Content-Type: application/json
+
+{
+    "name": "My Shop",
+    "description": "Shop description",
+    "logo": "logo_url"
+}
+
+### Get All Shops
+GET {{apiUrl}}/shop
+
+### Get Single Shop
+GET {{apiUrl}}/shop/:shopId
+
+### Update Shop (Vendor only)
+PUT {{apiUrl}}/shop/:shopId
+Authorization: {{authToken}}
+Content-Type: application/json
+
+{
+    "name": "Updated Shop Name",
+    "description": "Updated description"
+}
+
+### Delete Shop (Vendor/Admin)
+DELETE {{apiUrl}}/shop/:shopId
+Authorization: {{authToken}}
+
+### Get Vendor Profile
+GET {{apiUrl}}/shop/profile
+Authorization: {{authToken}}
+
+### Get Shop Products (Vendor only)
+GET {{apiUrl}}/shop/products
+Authorization: {{authToken}}
+
+### Follow Shop
+GET {{apiUrl}}/shop/:shopId/follow
+Authorization: {{authToken}}
+
+### Blacklist Shop (Admin only)
+PUT {{apiUrl}}/shop/:shopId/blacklist
+Authorization: {{authToken}}
+
+### Product Routes ###
+### Create Product (Vendor only)
+POST {{apiUrl}}/products
+Authorization: {{authToken}}
+Content-Type: application/json
+
+{
+    "name": "Product Name",
+    "description": "Product description",
+    "price": 99.99,
+    "categoryId": "category_id",
+    "shopId": "shop_id",
+    "quantity": 100,
+    "images": ["image_url1", "image_url2"]
+}
+
+### Get All Products
+GET {{apiUrl}}/products
+
+### Get Single Product
+GET {{apiUrl}}/products/:productId
+
+### Update Product (Vendor only)
+PUT {{apiUrl}}/products/:productId
+Authorization: {{authToken}}
+Content-Type: application/json
+
+{
+    "name": "Updated Product Name",
+    "price": 149.99
+}
+
+### Delete Product (Vendor/Admin)
+DELETE {{apiUrl}}/products/:productId
+Authorization: {{authToken}}
+
+### Category Routes ###
+### Create Category (Admin only)
+POST {{apiUrl}}/categories
+Authorization: {{authToken}}
+Content-Type: application/json
+
+{
+    "name": "Category Name",
+    "description": "Category description"
+}
+
+### Get All Categories
+GET {{apiUrl}}/categories
+
+### Update Category (Admin only)
+PUT {{apiUrl}}/categories/:categoryId
+Authorization: {{authToken}}
+Content-Type: application/json
+
+{
+    "name": "Updated Category Name"
+}
+
+### Delete Category (Admin only)
+DELETE {{apiUrl}}/categories/:categoryId
+Authorization: {{authToken}}
+
+### Cart Routes ###
+### Get Cart Items
+GET {{apiUrl}}/cart
+Authorization: {{authToken}}
+
+### Add Product to Cart
+POST {{apiUrl}}/cart
+Authorization: {{authToken}}
+Content-Type: application/json
+
+{
+    "productId": "product_id",
+    "quantity": 1
+}
+
+### Update Cart Item Quantity
+PUT {{apiUrl}}/cart/:cartItemId
+Authorization: {{authToken}}
+Content-Type: application/json
+
+{
+    "quantity": 2
+}
+
+### Remove Item from Cart
+DELETE {{apiUrl}}/cart/:cartItemId
+Authorization: {{authToken}}
+
+### Coupon Routes ###
+### Apply Coupon
+PUT {{apiUrl}}/coupons/apply
+Authorization: {{authToken}}
+Content-Type: application/json
+
+{
+    "code": "DISCOUNT20"
+}
+
+### Create Coupon (Vendor only)
+POST {{apiUrl}}/coupons
+Authorization: {{authToken}}
+Content-Type: application/json
+
+{
+    "code": "DISCOUNT20",
+    "discount": 20,
+    "expiresAt": "2024-12-31"
+}
+
+### Get All Coupons (Vendor only)
+GET {{apiUrl}}/coupons
+Authorization: {{authToken}}
+
+### Update Coupon (Vendor only)
+PUT {{apiUrl}}/coupons/:couponId
+Authorization: {{authToken}}
+Content-Type: application/json
+
+{
+    "discount": 25
+}
+
+### Delete Coupon (Vendor only)
+DELETE {{apiUrl}}/coupons/:couponId
+Authorization: {{authToken}}
+
+### Order Routes ###
+### Create Order (Customer only)
+POST {{apiUrl}}/orders
+Authorization: {{authToken}}
+Content-Type: application/json
+
+{
+    "paymentIntentId": "payment_intent_id"
+}
+
+### Get All Orders
+GET {{apiUrl}}/orders
+Authorization: {{authToken}}
+
+### Update Order Status (Vendor only)
+PUT {{apiUrl}}/orders/:orderId/status
+Authorization: {{authToken}}
+Content-Type: application/json
+
+{
+    "status": "PROCESSING"
+}
+
+### Payment Routes ###
+### Create Payment Intent
+POST {{apiUrl}}/payments/create-payment-intent
+Authorization: {{authToken}}
+
+### Get All Payments
+GET {{apiUrl}}/payments
+Authorization: {{authToken}}
+
+### Review Routes ###
+### Create Review (Customer only)
+POST {{apiUrl}}/reviews/:productId
+Authorization: {{authToken}}
+Content-Type: application/json
+
+{
+    "rating": 5,
+    "comment": "Great product!"
+}
+
+### Get All Reviews
+GET {{apiUrl}}/reviews
+Authorization: {{authToken}}
+
+### Update Review (Customer only)
+PUT {{apiUrl}}/reviews/:reviewId
+Authorization: {{authToken}}
+Content-Type: application/json
+
+{
+    "rating": 4,
+    "comment": "Updated review"
+}
+
+### Delete Review
+DELETE {{apiUrl}}/reviews/:reviewId
+Authorization: {{authToken}}
+
+### Create Review Response (Vendor only)
+POST {{apiUrl}}/reviews/:reviewId/response
+Authorization: {{authToken}}
+Content-Type: application/json
+
+{
+    "comment": "Thank you for your feedback!"
+}
+
+### Update Review Response (Vendor only)
+PUT {{apiUrl}}/reviews/response/:responseId
+Authorization: {{authToken}}
+Content-Type: application/json
+
+{
+    "comment": "Updated response"
+}
+
+### Delete Review Response (Vendor only)
+DELETE {{apiUrl}}/reviews/response/:responseId
+Authorization: {{authToken}}
